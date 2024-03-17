@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 
 /**
  * Panel class of Tic Tac Toe game, resporibel for all the game functions
- * ! Check out https://github.com/sebastian-sonne/tic-tac-toe [COMING SOON] for more info
+ * https://github.com/sebastian-sonne/TicTacToe
  *
  * @author Sebastian Sonne
  * @version v1 16.03.2024
