@@ -51,9 +51,6 @@ public class Panel extends JPanel implements ActionListener {
      * @return null, "tie", "O", "X"
      */
     private String checkGame() {
-        if (moveNum == 9)
-            return "tie";
-
         // Check horizontal and vertical lines
         for (int i = 0; i < buttons.length; i++) {
             if (checkLine(buttons[i][0].getText(), buttons[i][1].getText(), buttons[i][2].getText()))
@@ -67,6 +64,9 @@ public class Panel extends JPanel implements ActionListener {
         if (checkLine(buttons[0][0].getText(), buttons[1][1].getText(), buttons[2][2].getText())
                 || checkLine(buttons[0][2].getText(), buttons[1][1].getText(), buttons[2][0].getText()))
             return buttons[1][1].getText();
+
+        if (moveNum == 9)
+        return "tie";
 
         return null;
     }
