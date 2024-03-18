@@ -66,7 +66,7 @@ public class Panel extends JPanel implements ActionListener {
             return buttons[1][1].getText();
 
         if (moveNum == 9)
-        return "tie";
+            return "tie";
 
         return null;
     }
@@ -96,7 +96,6 @@ public class Panel extends JPanel implements ActionListener {
         resetButton.setFocusable(false);
         resetButton.addActionListener(e -> resetGame());
 
-        
         this.add(resetButton);
     }
 
@@ -138,15 +137,16 @@ public class Panel extends JPanel implements ActionListener {
 
     /**
      * function to set the player action on button in row and col
+     * 
      * @param row of button
      * @param col of button
      */
     private void setPlayerAction(int row, int col) {
-        //set button text: "O", or "X"
+        // set button text: "O", or "X"
         if (buttons[row][col].getText().equals(""))
             buttons[row][col].setText(getPlayer());
 
-        //check game for winner or tie
+        // check game for winner or tie
         String game = checkGame();
         if (game != null)
             showWinnerScreen(game);
@@ -228,6 +228,7 @@ public class Panel extends JPanel implements ActionListener {
 
     /**
      * function to draw a String s at a specific position
+     * 
      * @param s String to be drawn
      * @param x x position of String
      * @param y y position of String
@@ -269,6 +270,35 @@ public class Panel extends JPanel implements ActionListener {
             switch (e.getExtendedKeyCode()) {
                 case KeyEvent.VK_ESCAPE:
                     System.exit(0);
+                    break;
+
+                //Game Control Via KeyBoard
+                case KeyEvent.VK_1:
+                    setPlayerAction(0, 0);
+                    break;
+                case KeyEvent.VK_2:
+                    setPlayerAction(1, 0);
+                    break;
+                case KeyEvent.VK_3:
+                    setPlayerAction(2, 0);
+                    break;
+                case KeyEvent.VK_4:
+                    setPlayerAction(0, 1);
+                    break;
+                case KeyEvent.VK_5:
+                    setPlayerAction(1, 1);
+                    break;
+                case KeyEvent.VK_6:
+                    setPlayerAction(2, 1);
+                    break;
+                case KeyEvent.VK_7:
+                    setPlayerAction(0, 2);
+                    break;
+                case KeyEvent.VK_8:
+                    setPlayerAction(1, 2);
+                    break;
+                case KeyEvent.VK_9:
+                    setPlayerAction(2, 2);
                     break;
             }
         }
