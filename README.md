@@ -58,7 +58,7 @@ The java files are located in the src folder. When you have completed your contr
 ```
 3. Move the generate .class files into the /bin filder
 ``` bash
-move src\*.class bin\
+xcopy /Y src\*.class bin\
 ```
 4. Commit you changes in a new branch onto git and open a pull request. Don't forget to add a clear description.
 
