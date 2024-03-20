@@ -16,23 +16,23 @@ public class Computer {
     /**
      * function to check whether a gamestate is terminal
      * 
-     * @param buttons current gamestate
+     * @param gameState current gamestate
      * @return -1 -> O won; 1 -> X won; 0 -> its a tie; 10 -> game not over
      */
-    public static int isTerminal(JButton[][] buttons, int moveNum) {
+    public static int isTerminal(String[][] gameState, int moveNum) {
         // Check horizontal and vertical lines
-        for (int i = 0; i < buttons.length; i++) {
-            if (checkLine(buttons[i][0].getText(), buttons[i][1].getText(), buttons[i][2].getText()))
-                return (buttons[i][0].getText().equals("O")) ? -1 : 1;
+        for (int i = 0; i < gameState.length; i++) {
+            if (checkLine(gameState[i][0], gameState[i][1], gameState[i][2]))
+                return (gameState[i][0].equals("O")) ? -1 : 1;
 
-            if (checkLine(buttons[0][i].getText(), buttons[1][i].getText(), buttons[2][i].getText()))
-                return (buttons[0][i].getText().equals("O")) ? -1 : 1;
+            if (checkLine(gameState[0][i], gameState[1][i], gameState[2][i]))
+                return (gameState[0][i].equals("O")) ? -1 : 1;
         }
 
         // Check diagonals
-        if (checkLine(buttons[0][0].getText(), buttons[1][1].getText(), buttons[2][2].getText())
-                || checkLine(buttons[0][2].getText(), buttons[1][1].getText(), buttons[2][0].getText()))
-            return (buttons[1][1].getText().equals("O")) ? -1 : 1;
+        if (checkLine(gameState[0][0], gameState[1][1], gameState[2][2])
+                || checkLine(gameState[0][2], gameState[1][1], gameState[2][0]))
+            return (gameState[1][1].equals("O")) ? -1 : 1;
 
         // check for tie
         if (moveNum == 9)
@@ -56,29 +56,29 @@ public class Computer {
     /**
      * function to find all possible moves in a current gameState
      * 
-     * @param buttons current gameState
+     * @param gameState current gameState
      * @return row & col of each possible move, as a 2d array
      */
-    private static int[][] findMoves(JButton[][] buttons) {
+    private static int[][] findMoves(String[][] gameState) {
         int emptyCount = 0;
 
-        // Count the number of empty buttons
-        for (int i = 0; i < buttons.length; i++) {
-            for (int j = 0; j < buttons[i].length; j++) {
-                if (buttons[i][j].getText().equals("")) {
+        // Count the number of possible placesments
+        for (int i = 0; i < gameState.length; i++) {
+            for (int j = 0; j < gameState[i].length; j++) {
+                if (gameState[i][j].equals("")) {
                     emptyCount++;
                 }
             }
         }
 
-        // Create result array based on the number of empty buttons
+        // Create result array based on the number of possible placements
         int[][] res = new int[emptyCount][2];
         int index = 0;
 
-        // Populate the result array with coordinates of empty buttons
-        for (int i = 0; i < buttons.length; i++) {
-            for (int j = 0; j < buttons[i].length; j++) {
-                if (buttons[i][j].getText().equals("")) {
+        // Populate the result array with coordinates of possible placements
+        for (int i = 0; i < gameState.length; i++) {
+            for (int j = 0; j < gameState[i].length; j++) {
+                if (gameState[i][j].equals("")) {
                     res[index][0] = i;
                     res[index][1] = j;
                     index++;
@@ -119,7 +119,7 @@ public class Computer {
         return gameState;
     }
 
-    public static void miniMax() {
+    public static void miniMax(String[][] gameState, String playerTurn) {
         //TODO implement function
     }
 }

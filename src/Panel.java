@@ -19,8 +19,8 @@ import javax.swing.JPanel;
  * @version v1 16.03.2024
  */
 public class Panel extends JPanel implements ActionListener {
-    private static final int SCREEN_WIDTH = 500;
-    private static final int SCREEN_HEIGHT = 500;
+    private final int SCREEN_WIDTH = 500;
+    private final int SCREEN_HEIGHT = 500;
     private final int UNIT = 100;
     private final int GAP = 2;
     private final int COL_START = SCREEN_WIDTH / 5;
@@ -30,6 +30,7 @@ public class Panel extends JPanel implements ActionListener {
     private JButton resetButton;
 
     private static int moveNum;
+    private boolean wasEvaluated;
 
     /**
      * cunstructor of Panel class. initializes and starts game
@@ -45,6 +46,7 @@ public class Panel extends JPanel implements ActionListener {
         gameButtonSetup();
 
         moveNum = 0;
+        wasEvaluated = false;
     }
 
     /**
@@ -104,9 +106,12 @@ public class Panel extends JPanel implements ActionListener {
         }
 
         // check game for winner or tie
-        int gameState = Computer.isTerminal(buttons, moveNum);
-        if (gameState != 10)
-            showWinnerScreen(gameState);
+        String[][] gameState = Computer.copyToStringArray(buttons);
+        int gameEvaluation = Computer.isTerminal(gameState, moveNum);
+        if (gameEvaluation != 10 && wasEvaluated != true) {
+            wasEvaluated = true;
+            showWinnerScreen(gameEvaluation);
+        }
     }
 
     /**
@@ -149,6 +154,7 @@ public class Panel extends JPanel implements ActionListener {
      */
     private void resetGame() {
         setMoveNum(0);
+        wasEvaluated = false;
 
         for (int i = 0; i < buttons.length; i++) {
             for (int j = 0; j < buttons[i].length; j++) {
