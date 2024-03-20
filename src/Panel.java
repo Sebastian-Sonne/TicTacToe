@@ -29,7 +29,7 @@ public class Panel extends JPanel implements ActionListener {
     private JButton[][] buttons;
     private JButton resetButton;
 
-    private int moveNum = 0;
+    private static int moveNum;
 
     /**
      * cunstructor of Panel class. initializes and starts game
@@ -43,44 +43,8 @@ public class Panel extends JPanel implements ActionListener {
 
         functionButtonSetup();
         gameButtonSetup();
-    }
 
-    /**
-     * function to check for win/draw
-     * 
-     * @return null, "tie", "O", "X"
-     */
-    private String checkGame() {
-        // Check horizontal and vertical lines
-        for (int i = 0; i < buttons.length; i++) {
-            if (checkLine(buttons[i][0].getText(), buttons[i][1].getText(), buttons[i][2].getText()))
-                return buttons[i][0].getText();
-
-            if (checkLine(buttons[0][i].getText(), buttons[1][i].getText(), buttons[2][i].getText()))
-                return buttons[0][i].getText();
-        }
-
-        // Check diagonals
-        if (checkLine(buttons[0][0].getText(), buttons[1][1].getText(), buttons[2][2].getText())
-                || checkLine(buttons[0][2].getText(), buttons[1][1].getText(), buttons[2][0].getText()))
-            return buttons[1][1].getText();
-
-        if (moveNum == 9)
-            return "tie";
-
-        return null;
-    }
-
-    /**
-     * function to check if three Strings are equals and not empty
-     * 
-     * @param a first String
-     * @param b second String
-     * @param c third String
-     * @return true if equal and not empty
-     */
-    private boolean checkLine(String a, String b, String c) {
-        return !a.isEmpty() && a.equals(b) && a.equals(c);
+        moveNum = 0;
     }
 
     /**
@@ -127,15 +91,6 @@ public class Panel extends JPanel implements ActionListener {
     }
 
     /**
-     * function to return the symbol of the players turn
-     * 
-     * @return X or O
-     */
-    private String getPlayer() {
-        return (moveNum++ % 2 == 0) ? "X" : "O";
-    }
-
-    /**
      * function to set the player action on button in row and col
      * 
      * @param row of button
@@ -143,33 +98,36 @@ public class Panel extends JPanel implements ActionListener {
      */
     private void setPlayerAction(int row, int col) {
         // set button text: "O", or "X"
-        if (buttons[row][col].getText().equals(""))
-            buttons[row][col].setText(getPlayer());
+        if (buttons[row][col].getText().equals("")) {
+            buttons[row][col].setText(Computer.getPlayerTurn());
+            setMoveNum(getMoveNum() + 1);
+        }
 
         // check game for winner or tie
-        String game = checkGame();
-        if (game != null)
-            showWinnerScreen(game);
+        int gameState = Computer.isTerminal(buttons, moveNum);
+        if (gameState != 10)
+            showWinnerScreen(gameState);
     }
 
     /**
      * function to show the winner screen
      * 
-     * @param message accepts "tie", "O", "X"
+     * @param message accepts -1, 0, 1
      */
-    private void showWinnerScreen(String message) {
+    private void showWinnerScreen(int gameState) {
         String[] options = { "Quit", "Restart" };
+        String message;
 
         // convert input String into relevant message
-        switch (message) {
-            case "tie":
-                message = "It's a Tie!";
-                break;
-            case "O":
+        switch (gameState) {
+            case -1:
                 message = "Player O won!";
                 break;
-            case "X":
+            case 1:
                 message = "Player X won!";
+                break;
+            default:
+                message = "It's a Tie!";
                 break;
         }
 
@@ -190,7 +148,7 @@ public class Panel extends JPanel implements ActionListener {
      * function to reset the game
      */
     private void resetGame() {
-        moveNum = 0;
+        setMoveNum(0);
 
         for (int i = 0; i < buttons.length; i++) {
             for (int j = 0; j < buttons[i].length; j++) {
@@ -272,7 +230,7 @@ public class Panel extends JPanel implements ActionListener {
                     System.exit(0);
                     break;
 
-                //Game Control Via KeyBoard
+                // Game Control Via KeyBoard
                 case KeyEvent.VK_1:
                     setPlayerAction(0, 0);
                     break;
@@ -302,5 +260,19 @@ public class Panel extends JPanel implements ActionListener {
                     break;
             }
         }
+    }
+
+    /**
+     * @return moveNum
+     */
+    public static int getMoveNum() {
+        return moveNum;
+    }
+
+    /**
+     * @param val new value of moveNum
+     */
+    public static void setMoveNum(int val) {
+        moveNum = val;
     }
 }
