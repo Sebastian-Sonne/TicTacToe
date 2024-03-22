@@ -154,65 +154,88 @@ public class Computer {
         return count;
     }
 
+    /**
+     * function to identify the next best move
+     * 
+     * @param gameState current gameState as String[][]
+     * @return int[] = {evalValue, row, col}
+     */
     public static int[] miniMax(String[][] gameState) {
         String playerTurn = getPlayerTurn(gameState);
         int[] evaluation = { 10, -1, -1 }; // [0] = score, [1] = row, [2] = col
 
-        // minimizing player
         if (playerTurn.equals("O")) {
-            evaluation[0] = Integer.MAX_VALUE;
-            int[][] moves = findMoves(gameState); // example {{2, 3}, {1, 2}}
+            return minMove(gameState, evaluation);
+        } else {
+            return maxMove(gameState, evaluation);
+        }
+    }
 
-            for (int[] move : moves) {
+    /**
+     * function to find the next best move for the maximizing player
+     * 
+     * @param gameState  current gameState String[][]
+     * @param evaluation current eveluation array: int[] = {evalValue, row, col}
+     * @return new eveluation array: int[] = {evalValue, row, col}
+     */
+    private static int[] maxMove(String[][] gameState, int[] evaluation) {
+        evaluation[0] = Integer.MIN_VALUE;
+        int[][] moves = findMoves(gameState); // example {{2, 3}, {1, 2}}
 
-                String[][] newGameState = mergeMove(gameState, move[0], move[1]);
+        for (int[] move : moves) {
+            String[][] newGameState = mergeMove(gameState, move[0], move[1]);
+            int newGameStateEval = eveluateGameState(newGameState);
 
-                // 10: not over yet;
-                int newGameStateEval = isTerminal(newGameState, getMoveNum(newGameState));
-
-                if (newGameStateEval == -1 || newGameStateEval == 0 || newGameStateEval == 1) {
-                    if (newGameStateEval < evaluation[0]) {
-                        evaluation[0] = newGameStateEval;
-                        evaluation[1] = move[0];
-                        evaluation[2] = move[1];
-                    }
-                } else {
-                    int[] recurseCallEvaluation = miniMax(newGameState);
-                    if (evaluation[0] < recurseCallEvaluation[0]) {
-                        evaluation = recurseCallEvaluation;
-                    }
-                }
+            if (newGameStateEval > evaluation[0]) {
+                evaluation[0] = newGameStateEval;
+                evaluation[1] = move[0];
+                evaluation[2] = move[1];
             }
 
-            return evaluation;
+        }
 
-        } else { // maximizing player
-            evaluation[0] = Integer.MIN_VALUE;
-            int[][] moves = findMoves(gameState); // example {{2, 3}, {1, 2}}
+        return evaluation;
+    }
 
-            for (int[] move : moves) {
+    /**
+     * function to find the next best move for the minimizing player
+     * 
+     * @param gameState  current gameState String[][]
+     * @param evaluation current eveluation array: int[] = {evalValue, row, col}
+     * @return new eveluation array: int[] = {evalValue, row, col}
+     */
+    private static int[] minMove(String[][] gameState, int[] evaluation) {
+        evaluation[0] = Integer.MAX_VALUE;
+        int[][] moves = findMoves(gameState); // example {{2, 3}, {1, 2}}
 
-                String[][] newGameState = mergeMove(gameState, move[0], move[1]);
+        for (int[] move : moves) {
+            String[][] newGameState = mergeMove(gameState, move[0], move[1]);
+            int newGameStateEval = eveluateGameState(newGameState);
 
-                // 10: not over yet;
-                int newGameStateEval = isTerminal(newGameState, getMoveNum(newGameState));
-
-                if (newGameStateEval == -1 || newGameStateEval == 0 || newGameStateEval == 1) {
-                    if (newGameStateEval > evaluation[0]) {
-                        evaluation[0] = newGameStateEval;
-                        evaluation[1] = move[0];
-                        evaluation[2] = move[1];
-                    }
-                } else {
-                    int[] recurseCallEvaluation = miniMax(newGameState);
-                    if (evaluation[0] > recurseCallEvaluation[0]) {
-                        evaluation = recurseCallEvaluation;
-                    }
-                }
-
+            if (newGameStateEval < evaluation[0]) {
+                evaluation[0] = newGameStateEval;
+                evaluation[1] = move[0];
+                evaluation[2] = move[1];
             }
+        }
 
-            return evaluation;
+        return evaluation;
+    }
+
+    /**
+     * function to eveluate a gameState
+     * @param gameState current GameState
+     * @return eveluation score
+     */
+    private static int eveluateGameState(String[][] gameState) {
+        int moveNum = getMoveNum(gameState);
+        int gameEvaluation = isTerminal(gameState, moveNum);
+
+        if (gameEvaluation == -1 || gameEvaluation == 0 || gameEvaluation == 1) {
+            return gameEvaluation;
+        } else {
+            int[] eveluation = miniMax(gameState);
+            return eveluation[0];
         }
     }
 }
