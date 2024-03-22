@@ -1,4 +1,6 @@
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -6,10 +8,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import org.w3c.dom.events.MouseEvent;
 
 /**
  * Panel class of Tic Tac Toe game, resporibel for all the game functions
@@ -28,6 +34,9 @@ public class Panel extends JPanel implements ActionListener {
 
     private JButton[][] buttons;
     private JButton resetButton;
+    private JButton singlePlayerButton;
+    private JButton multiPlayerButton;
+    private JLabel copyrightLabel;
 
     private static int moveNum;
     private boolean wasEvaluated;
@@ -42,8 +51,10 @@ public class Panel extends JPanel implements ActionListener {
         this.addKeyListener(new MyKeyAdapter());
         this.setLayout(null);
 
+        /* 
         functionButtonSetup();
         gameButtonSetup();
+        */
 
         moveNum = 0;
         wasEvaluated = false;
@@ -62,7 +73,29 @@ public class Panel extends JPanel implements ActionListener {
         resetButton.setFocusable(false);
         resetButton.addActionListener(e -> resetGame());
 
-        this.add(resetButton);
+        singlePlayerButton = new JButton("Play the Computer");
+        multiPlayerButton = new JButton("Play a friend!");
+
+        JButton[] buttons = {singlePlayerButton, multiPlayerButton};
+        for (JButton button : buttons) {
+            button.setBorder(null);
+            button.setFont(new Font("SANS_SERIF", Font.PLAIN, 16));
+            button.setBackground(Color.darkGray);
+            button.setForeground(Color.white);
+            button.setFocusable(false);
+            button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+            this.add(button);
+            //button.setVisible(false);
+        }
+
+        singlePlayerButton.setBounds(50, 30, 200, 100);
+        multiPlayerButton.setBounds(50, 200, 200, 100);
+
+        singlePlayerButton.addActionListener(e -> playComputer());
+        multiPlayerButton.addActionListener(e -> playFriend());
+
+        //this.add(resetButton);
     }
 
     /**
@@ -79,6 +112,7 @@ public class Panel extends JPanel implements ActionListener {
                 buttons[i][j].setBackground(Color.black);
                 buttons[i][j].setForeground(Color.white);
                 buttons[i][j].setFocusable(false);
+                buttons[i][j].setCursor(new Cursor(Cursor.HAND_CURSOR));
 
                 int x = COL_START + UNIT * i;
                 int y = ROW_START + UNIT * j;
@@ -90,6 +124,68 @@ public class Panel extends JPanel implements ActionListener {
                 this.add(buttons[i][j]);
             }
         }
+    }
+
+    /**
+     * function to set up the copyright label
+     */
+    private void setUpCopyright() {
+        copyrightLabel = new JLabel("Copyright \u00A9 2024 Sebastian Sonne");
+        copyrightLabel.setFont(new Font("SANS_SERIF", Font.PLAIN, 12));
+        copyrightLabel.setForeground(Color.gray);
+
+        copyrightLabel.setBounds(10, 475, 200, 15);
+        copyrightLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        copyrightLabel.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                openURL("https://github.com/sebastian-sonne/ticTacToe");
+            }
+
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent e) {
+                //not relevent
+            }
+
+            @Override
+            public void mouseReleased(java.awt.event.MouseEvent e) {
+                //not relevent
+            }
+
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                //not relevent
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                //not relevent
+            }
+            
+        });
+
+        this.add(copyrightLabel);
+    }
+
+    /**
+     * function to open a url in the default browser
+     * @param url url to be opend
+     */
+    private void openURL(String url) {
+        try {
+            Desktop.getDesktop().browse(new java.net.URI(url));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void playComputer() {
+        //TODO implement
+    }
+
+    private void playFriend() {
+        //TODO implement
     }
 
     /**
@@ -169,10 +265,29 @@ public class Panel extends JPanel implements ActionListener {
     }
 
     public void draw(Graphics g) {
+
+        drawTitleScreen(g);
+
+        /* 
         g.setColor(Color.lightGray);
         drawString("Tic Tac Toe", 130, 50, g);
         drawGrid(g);
+        */
     }
+
+    /**
+     * function to draw the title screen
+     * @param g Graphics g
+     */
+    private void drawTitleScreen(Graphics g) {
+        // draw Title
+        g.setColor(Color.lightGray);
+        drawString("Tic Tac Toe", 130, 50, 48, g);
+
+        setUpCopyright();
+        functionButtonSetup();
+    }
+
 
     /**
      * function to draw the Tic Tac Toe grid
@@ -198,8 +313,8 @@ public class Panel extends JPanel implements ActionListener {
      * @param y y position of String
      * @param g Graphics g
      */
-    private void drawString(String s, int x, int y, Graphics g) {
-        g.setFont(new Font("SANS_SERIF", Font.PLAIN, 48));
+    private void drawString(String s, int x, int y, int fontSize, Graphics g) {
+        g.setFont(new Font("SANS_SERIF", Font.PLAIN, fontSize));
         g.drawString(s, x, y);
     }
 
