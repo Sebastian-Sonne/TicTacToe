@@ -13,6 +13,21 @@ public class Computer {
         return (moveNum % 2 == 0) ? "X" : "O";
     }
 
+    private static String getPlayerTurn(String[][] gameState) {
+        int countO = 0, countX = 0;
+
+        for (int i = 0; i < gameState.length; i++) {
+            for (int j = 0; j < gameState[i].length; j++) {
+                if (gameState[i][j].equals("O")) {
+                    countO++;
+                } else if (gameState[i][j].equals("X")) {
+                    countX++;
+                }
+            }
+        }
+        return (countX > countO) ? "O" : "X";
+    }
+
     /**
      * function to check whether a gamestate is terminal
      * 
@@ -91,9 +106,10 @@ public class Computer {
 
     /**
      * function to merge a move into a copy of the gameState
+     * 
      * @param gameState copy of the current gamestate
-     * @param row row of next move
-     * @param col column of next move
+     * @param row       row of next move
+     * @param col       column of next move
      * @return new gamestate
      */
     private static String[][] mergeMove(String[][] gameState, int row, int col) {
@@ -103,7 +119,8 @@ public class Computer {
     }
 
     /**
-     * function to create a working 2d String array copy of 2d JButton array 
+     * function to create a working 2d String array copy of 2d JButton array
+     * 
      * @param buttons current gamestate
      * @return 2d String array of gamestate
      */
@@ -119,7 +136,83 @@ public class Computer {
         return gameState;
     }
 
-    public static void miniMax(String[][] gameState, String playerTurn) {
-        //TODO implement function
+    /**
+     * function to find the move Number based on the gameState
+     * 
+     * @param gameState
+     * @return moveNumber
+     */
+    private static int getMoveNum(String[][] gameState) {
+        int count = 0;
+
+        for (int i = 0; i < gameState.length; i++) {
+            for (int j = 0; j < gameState[i].length; j++) {
+                if (!gameState[i][j].equals("-"))
+                    count++;
+            }
+        }
+        return count;
+    }
+
+    public static int[] miniMax(String[][] gameState) {
+        String playerTurn = getPlayerTurn(gameState);
+        int[] evaluation = { 10, -1, -1 }; // [0] = score, [1] = row, [2] = col
+
+        // minimizing player
+        if (playerTurn.equals("O")) {
+            evaluation[0] = Integer.MAX_VALUE;
+            int[][] moves = findMoves(gameState); // example {{2, 3}, {1, 2}}
+
+            for (int[] move : moves) {
+
+                String[][] newGameState = mergeMove(gameState, move[0], move[1]);
+
+                // 10: not over yet;
+                int newGameStateEval = isTerminal(newGameState, getMoveNum(newGameState));
+
+                if (newGameStateEval == -1 || newGameStateEval == 0 || newGameStateEval == 1) {
+                    if (newGameStateEval < evaluation[0]) {
+                        evaluation[0] = newGameStateEval;
+                        evaluation[1] = move[0];
+                        evaluation[2] = move[1];
+                    }
+                } else {
+                    int[] recurseCallEvaluation = miniMax(newGameState);
+                    if (evaluation[0] < recurseCallEvaluation[0]) {
+                        evaluation = recurseCallEvaluation;
+                    }
+                }
+            }
+
+            return evaluation;
+
+        } else { // maximizing player
+            evaluation[0] = Integer.MIN_VALUE;
+            int[][] moves = findMoves(gameState); // example {{2, 3}, {1, 2}}
+
+            for (int[] move : moves) {
+
+                String[][] newGameState = mergeMove(gameState, move[0], move[1]);
+
+                // 10: not over yet;
+                int newGameStateEval = isTerminal(newGameState, getMoveNum(newGameState));
+
+                if (newGameStateEval == -1 || newGameStateEval == 0 || newGameStateEval == 1) {
+                    if (newGameStateEval > evaluation[0]) {
+                        evaluation[0] = newGameStateEval;
+                        evaluation[1] = move[0];
+                        evaluation[2] = move[1];
+                    }
+                } else {
+                    int[] recurseCallEvaluation = miniMax(newGameState);
+                    if (evaluation[0] > recurseCallEvaluation[0]) {
+                        evaluation = recurseCallEvaluation;
+                    }
+                }
+
+            }
+
+            return evaluation;
+        }
     }
 }
