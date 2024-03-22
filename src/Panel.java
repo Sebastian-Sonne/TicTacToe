@@ -22,7 +22,7 @@ import javax.swing.JPanel;
  * @author Sebastian Sonne
  * @version v1 16.03.2024
  */
-public class Panel extends JPanel implements ActionListener {
+public class Panel extends JPanel {
     private final int SCREEN_WIDTH = 500;
     private final int SCREEN_HEIGHT = 500;
     private final int UNIT = 100;
@@ -125,7 +125,7 @@ public class Panel extends JPanel implements ActionListener {
                 int y = ROW_START + UNIT * j;
                 buttons[i][j].setBounds(x + GAP, y + GAP, UNIT - GAP, UNIT - GAP);
 
-                buttons[i][j].addActionListener(this);
+                buttons[i][j].addActionListener(e -> actionPerformed(e.getActionCommand()));
                 buttons[i][j].setActionCommand(i + ":" + j);
 
                 this.add(buttons[i][j]);
@@ -365,9 +365,7 @@ public class Panel extends JPanel implements ActionListener {
     /**
      * function to check for action events on buttons
      */
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        String actionCommand = e.getActionCommand();
+    public void actionPerformed(String actionCommand) {
         int row, col;
 
         switch (actionCommand) {
