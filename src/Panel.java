@@ -15,8 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.w3c.dom.events.MouseEvent;
-
 /**
  * Panel class of Tic Tac Toe game, resporibel for all the game functions
  * https://github.com/sebastian-sonne/TicTacToe
@@ -36,10 +34,15 @@ public class Panel extends JPanel implements ActionListener {
     private JButton resetButton;
     private JButton singlePlayerButton;
     private JButton multiPlayerButton;
+
     private JLabel copyrightLabel;
+    private JLabel titleLabel;
+    private JLabel instructionsLabel;
 
     private static int moveNum;
     private boolean wasEvaluated;
+    private boolean initialLoad;
+    private boolean drawBoard;
 
     /**
      * cunstructor of Panel class. initializes and starts game
@@ -51,51 +54,55 @@ public class Panel extends JPanel implements ActionListener {
         this.addKeyListener(new MyKeyAdapter());
         this.setLayout(null);
 
-        /* 
-        functionButtonSetup();
-        gameButtonSetup();
-        */
-
         moveNum = 0;
         wasEvaluated = false;
+        initialLoad = true;
+        drawBoard = false;
     }
 
     /**
-     * function to set up all function buttons (reset button)
+     * function to set up all function buttons
+     * 
+     * @param resetButtonVisible        visibility of reset button
+     * @param singlePlayerButtonVisible visibility of singleplayer button
+     * @param multiPlayerButtonVisible  visibility of multiplayer button
      */
-    private void functionButtonSetup() {
+    private void setupFunctionButtons() {
         resetButton = new JButton("Reset");
-        resetButton.setBounds(10, SCREEN_HEIGHT - 40, 50, 20);
-        resetButton.setBorder(null);
-        resetButton.setFont(new Font("SANS_SERIF", Font.PLAIN, 16));
-        resetButton.setBackground(Color.black);
-        resetButton.setForeground(Color.gray);
-        resetButton.setFocusable(false);
-        resetButton.addActionListener(e -> resetGame());
+        singlePlayerButton = new JButton("1 Player");
+        multiPlayerButton = new JButton("2 Players");
 
-        singlePlayerButton = new JButton("Play the Computer");
-        multiPlayerButton = new JButton("Play a friend!");
-
-        JButton[] buttons = {singlePlayerButton, multiPlayerButton};
+        JButton[] buttons = { resetButton, singlePlayerButton, multiPlayerButton };
         for (JButton button : buttons) {
             button.setBorder(null);
-            button.setFont(new Font("SANS_SERIF", Font.PLAIN, 16));
+            button.setFont(new Font("SANS_SERIF", Font.BOLD, 24));
             button.setBackground(Color.darkGray);
             button.setForeground(Color.white);
             button.setFocusable(false);
             button.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
             this.add(button);
-            //button.setVisible(false);
         }
 
-        singlePlayerButton.setBounds(50, 30, 200, 100);
-        multiPlayerButton.setBounds(50, 200, 200, 100);
+        resetButton.setBackground(Color.black);
+        resetButton.setForeground(Color.gray);
+        resetButton.setFont(new Font("SANS_SERIF", Font.PLAIN, 16));
 
+        resetButton.setBounds(5, SCREEN_HEIGHT - 50, 50, 20);
+        singlePlayerButton.setBounds(25, 250, 200, 75);
+        multiPlayerButton.setBounds(SCREEN_WIDTH - 25 - 200, 250, 200, 75);
+
+        resetButton.setVisible(false);
+        singlePlayerButton.setVisible(true);
+        multiPlayerButton.setVisible(true);
+
+        resetButton.addActionListener(e -> resetGame());
         singlePlayerButton.addActionListener(e -> playComputer());
         multiPlayerButton.addActionListener(e -> playFriend());
 
-        //this.add(resetButton);
+        this.add(resetButton);
+        this.add(singlePlayerButton);
+        this.add(multiPlayerButton);
     }
 
     /**
@@ -109,7 +116,7 @@ public class Panel extends JPanel implements ActionListener {
                 buttons[i][j] = new JButton();
                 buttons[i][j].setBorder(null);
                 buttons[i][j].setFont(new Font("SANS_SERIF", Font.PLAIN, 96));
-                buttons[i][j].setBackground(Color.black);
+                buttons[i][j].setBackground(Color.red);
                 buttons[i][j].setForeground(Color.white);
                 buttons[i][j].setFocusable(false);
                 buttons[i][j].setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -145,24 +152,24 @@ public class Panel extends JPanel implements ActionListener {
 
             @Override
             public void mousePressed(java.awt.event.MouseEvent e) {
-                //not relevent
+                // not relevent
             }
 
             @Override
             public void mouseReleased(java.awt.event.MouseEvent e) {
-                //not relevent
+                // not relevent
             }
 
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e) {
-                //not relevent
+                // not relevent
             }
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
-                //not relevent
+                // not relevent
             }
-            
+
         });
 
         this.add(copyrightLabel);
@@ -170,6 +177,7 @@ public class Panel extends JPanel implements ActionListener {
 
     /**
      * function to open a url in the default browser
+     * 
      * @param url url to be opend
      */
     private void openURL(String url) {
@@ -181,11 +189,26 @@ public class Panel extends JPanel implements ActionListener {
     }
 
     private void playComputer() {
-        //TODO implement
+        changeToGame();
+        // TODO implement computer
     }
 
+    /**
+     * function to start game with two players
+     */
     private void playFriend() {
-        //TODO implement
+        changeToGame();
+        // TODO implement 
+    }
+
+    private void changeToGame() {
+        hideTitleScreen();
+        resetButton.setVisible(true);
+        setUpCopyright();
+
+        drawBoard = true;
+        this.repaint();
+        gameButtonSetup();
     }
 
     /**
@@ -265,36 +288,70 @@ public class Panel extends JPanel implements ActionListener {
     }
 
     public void draw(Graphics g) {
+        if (initialLoad) {
+            setupTitleScreen();
+            initialLoad = false;
+        }
 
-        drawTitleScreen(g);
-
-        /* 
-        g.setColor(Color.lightGray);
-        drawString("Tic Tac Toe", 130, 50, g);
-        drawGrid(g);
-        */
+        if (drawBoard) {
+            drawGameBoard(g);
+        }
     }
 
     /**
      * function to draw the title screen
-     * @param g Graphics g
      */
-    private void drawTitleScreen(Graphics g) {
-        // draw Title
-        g.setColor(Color.lightGray);
-        drawString("Tic Tac Toe", 130, 50, 48, g);
-
+    private void setupTitleScreen() {
+        setupTitle(130, 30);
+        setupDescription(150, 200);
         setUpCopyright();
-        functionButtonSetup();
+        setupFunctionButtons();
     }
 
+    /**
+     * function to hide the title screen elements
+     */
+    private void hideTitleScreen() {
+        singlePlayerButton.setVisible(false);
+        multiPlayerButton.setVisible(false);
+        instructionsLabel.setVisible(false);
+    }
+
+    /**
+     * function to setup the game title
+     * 
+     * @param x x-coordinate of title
+     * @param y y-coordinate of title
+     */
+    private void setupTitle(int x, int y) {
+        titleLabel = new JLabel("Tic Tac Toe");
+        titleLabel.setFont(new Font("SANS_SERIF", Font.PLAIN, 48));
+        titleLabel.setBounds(x, y, 300, 50);
+        titleLabel.setForeground(Color.white);
+        titleLabel.setBackground(Color.blue);
+        this.add(titleLabel);
+    }
+
+    /**
+     * function to setup the game instructions
+     * @param x x-coordinate of instruction
+     * @param y y-coordinate of instruction
+     */
+    private void setupDescription(int x, int y) {
+        instructionsLabel = new JLabel("Chose Game Mode");
+        instructionsLabel.setFont(new Font("SANS_SERIF", Font.PLAIN, 22));
+        instructionsLabel.setBounds(x, y, 200, 20);
+        instructionsLabel.setForeground(Color.white);
+        instructionsLabel.setBackground(Color.cyan);
+        this.add(instructionsLabel);
+    }
 
     /**
      * function to draw the Tic Tac Toe grid
      * 
      * @param g Graphics g
      */
-    private void drawGrid(Graphics g) {
+    private void drawGameBoard(Graphics g) {
         g.setColor(Color.gray);
 
         for (int i = 1; i < 3; i++) {
@@ -306,18 +363,8 @@ public class Panel extends JPanel implements ActionListener {
     }
 
     /**
-     * function to draw a String s at a specific position
-     * 
-     * @param s String to be drawn
-     * @param x x position of String
-     * @param y y position of String
-     * @param g Graphics g
+     * function to check for action events on buttons
      */
-    private void drawString(String s, int x, int y, int fontSize, Graphics g) {
-        g.setFont(new Font("SANS_SERIF", Font.PLAIN, fontSize));
-        g.drawString(s, x, y);
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         String actionCommand = e.getActionCommand();
