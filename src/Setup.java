@@ -12,7 +12,6 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.UIManager;
 
 /**
  * Class to setup elements of JPanel for TicTacToe game
