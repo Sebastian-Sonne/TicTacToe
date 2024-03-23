@@ -1,5 +1,11 @@
 import javax.swing.JButton;
 
+/**
+ * Class to calculate the next best move for single Player mdoe
+ * 
+ * @author Sebastian Sonne
+ * @version v1 20.03.2024
+ */
 public class Computer {
 
     /**

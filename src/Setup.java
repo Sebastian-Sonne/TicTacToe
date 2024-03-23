@@ -12,12 +12,13 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.UIManager;
 
 /**
- * Class to setup elements of JPanel
+ * Class to setup elements of JPanel for TicTacToe game
  * 
  * @author Sebastian Sonne
- * @version v1 22.03.2024
+ * @version v2 23.03.2024
  */
 public class Setup {
     private static final int UNIT = 100;

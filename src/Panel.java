@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
- * Panel class of Tic Tac Toe game, resporibel for all the game functions
+ * Panel class of Tic Tac Toe game, responsibel Panel setup and game master
  * https://github.com/sebastian-sonne/TicTacToe
  *
  * @author Sebastian Sonne
@@ -30,7 +30,6 @@ public class Panel extends JPanel {
     private JLabel instructionsLabel;
 
     private static int moveNum;
-    private boolean wasEvaluated;
     private boolean singlePlayer;
 
     /**
@@ -44,7 +43,6 @@ public class Panel extends JPanel {
         this.setLayout(null);
 
         moveNum = 0;
-        wasEvaluated = false;
 
         setupTitleScreen();
     }
@@ -93,14 +91,15 @@ public class Panel extends JPanel {
         // set button text: "O", or "X"
         if (buttons[row][col].getText().equals("")) {
             buttons[row][col].setText(Computer.getPlayerTurn());
+            buttons[row][col].setEnabled(false);
             setMoveNum(getMoveNum() + 1);
         }
 
         // check game for winner or tie
         String[][] gameState = Computer.copyToStringArray(buttons);
         int gameEvaluation = Computer.isTerminal(gameState, moveNum);
-        if (gameEvaluation != 10 && wasEvaluated != true) {
-            wasEvaluated = true;
+        if (gameEvaluation != 10) {
+            disableGameButtons();
             showWinner(gameEvaluation);
         }
     }
@@ -146,7 +145,7 @@ public class Panel extends JPanel {
      */
     public void resetGame() {
         setMoveNum(0);
-        wasEvaluated = false;
+        enableGameButtons();
 
         for (int i = 0; i < buttons.length; i++) {
             for (int j = 0; j < buttons[i].length; j++) {
@@ -230,6 +229,32 @@ public class Panel extends JPanel {
             }
         }
     }
+
+    /*
+     * game functions
+    */
+
+    /**
+     * function to disable game buttons
+     */
+    private void disableGameButtons() {
+        for (JButton[] buttonRow : buttons) {
+            for (JButton button : buttonRow) {
+                button.setEnabled(false);
+            }
+        }
+    }
+
+    /**
+     * function to enable game buttons
+     */
+    private void enableGameButtons() {
+        for (JButton[] buttonRow : buttons) {
+            for (JButton button : buttonRow) {
+                button.setEnabled(true);
+            }
+        }
+     }
 
     /*
      * getter setter methods
@@ -335,7 +360,8 @@ public class Panel extends JPanel {
         try {
             this.add(Setup.gameBoard());
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error loading game board image: " + e.getMessage(), "IO Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error loading game board image: " + e.getMessage(), "IO Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 }
