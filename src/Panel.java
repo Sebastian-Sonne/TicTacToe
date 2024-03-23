@@ -1,9 +1,8 @@
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -20,10 +19,6 @@ import javax.swing.JPanel;
 public class Panel extends JPanel {
     public static final int SCREEN_WIDTH = 500;
     public static final int SCREEN_HEIGHT = 500;
-    private final int UNIT = 100;
-    public final int GAP = 2;
-    private final int COL_START = SCREEN_WIDTH / 5;
-    private final int ROW_START = SCREEN_HEIGHT / 5;
 
     private JButton[][] buttons;
     private JButton resetButton;
@@ -36,8 +31,6 @@ public class Panel extends JPanel {
 
     private static int moveNum;
     private boolean wasEvaluated;
-    private boolean initialLoad;
-    private boolean drawBoard;
     private boolean singlePlayer;
 
     /**
@@ -52,49 +45,8 @@ public class Panel extends JPanel {
 
         moveNum = 0;
         wasEvaluated = false;
-        initialLoad = true;
-        drawBoard = false;
-    }
 
-    /**
-     * function to set up all function buttons
-     */
-    private void setupFunctionButtons() {
-        resetButton = new JButton("Reset");
-        singlePlayerButton = new JButton("1 Player");
-        multiPlayerButton = new JButton("2 Players");
-
-        Setup.functionButtons(resetButton, singlePlayerButton, multiPlayerButton, e -> resetGame(), e -> playComputer(),
-                e -> playFriend());
-
-        this.add(resetButton);
-        this.add(singlePlayerButton);
-        this.add(multiPlayerButton);
-    }
-
-    /**
-     * function to setup all 9 JBUttons
-     */
-    private void gameButtonSetup() {
-        buttons = new JButton[3][3];
-
-        for (int i = 0; i < buttons.length; i++) {
-            for (int j = 0; j < buttons.length; j++) {
-
-                buttons[i][j] = new JButton();
-                Setup.gameButtons(buttons[i][j], i, j, e -> actionPerformed(e.getActionCommand()));
-                this.add(buttons[i][j]);
-            }
-        }
-    }
-
-    /**
-     * function to set up the copyright label
-     */
-    private void setUpCopyright() {
-        copyrightLabel = new JLabel("Copyright \u00A9 2024 Sebastian Sonne");
-        Setup.copyright(copyrightLabel);
-        this.add(copyrightLabel);
+        setupTitleScreen();
     }
 
     /**
@@ -126,11 +78,9 @@ public class Panel extends JPanel {
     private void changeToGame() {
         hideTitleScreen();
         resetButton.setVisible(true);
-        setUpCopyright();
 
-        drawBoard = true;
-        this.repaint();
-        gameButtonSetup();
+        setupGameButtons();
+        setupGameBoard();
     }
 
     /**
@@ -151,17 +101,44 @@ public class Panel extends JPanel {
         int gameEvaluation = Computer.isTerminal(gameState, moveNum);
         if (gameEvaluation != 10 && wasEvaluated != true) {
             wasEvaluated = true;
-            Play.showWinner(gameEvaluation, this);
+            showWinner(gameEvaluation);
         }
     }
 
     /**
-     * function to show the winner screen
-     * ! new method in play class -> move everythings into play class
-     * @param message accepts -1, 0, 1
+     * function to show the game eval dialog
+     * 
+     * @param gameState final gameState evaluation: -1, 0, 1 possible
+     * @param panel     reference to JPanel to show dialog
      */
-    private void showWinnerScreen(int gameState) {
-        Play.showWinner(gameState, this);
+    public void showWinner(int gameState) {
+        String[] options = { "Quit", "Restart" };
+        String message;
+
+        // convert input String into relevant message
+        switch (gameState) {
+            case -1:
+                message = "Player O won!";
+                break;
+            case 1:
+                message = "Player X won!";
+                break;
+            default:
+                message = "It's a Tie!";
+                break;
+        }
+
+        int choice = JOptionPane.showOptionDialog(this, message, "Game Results", JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.INFORMATION_MESSAGE, null, options, options[1]);
+
+        switch (choice) {
+            case JOptionPane.YES_OPTION: // Quit
+                System.exit(0);
+                break;
+            case JOptionPane.NO_OPTION: // Restart
+                resetGame();
+                break;
+        }
     }
 
     /**
@@ -178,37 +155,6 @@ public class Panel extends JPanel {
         }
     }
 
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        draw(g);
-    }
-
-    /**
-     * function of paintcomponent
-     * 
-     * @param g Grpahics
-     */
-    public void draw(Graphics g) {
-        if (initialLoad) {
-            setupTitleScreen();
-            initialLoad = false;
-        }
-
-        if (drawBoard) {
-            drawGameBoard(g);
-        }
-    }
-
-    /**
-     * function to draw the title screen
-     */
-    private void setupTitleScreen() {
-        setupTitle(130, 30);
-        setupDescription(150, 200);
-        setUpCopyright();
-        setupFunctionButtons();
-    }
-
     /**
      * function to hide the title screen elements
      */
@@ -216,49 +162,7 @@ public class Panel extends JPanel {
         singlePlayerButton.setVisible(false);
         multiPlayerButton.setVisible(false);
         instructionsLabel.setVisible(false);
-    }
-
-    /**
-     * function to setup the game title
-     * 
-     * @param x x-coordinate of title
-     * @param y y-coordinate of title
-     */
-    private void setupTitle(int x, int y) {
-        titleLabel = new JLabel("Tic Tac Toe");
-        Setup.title(titleLabel, x, y);
-        this.add(titleLabel);
-    }
-
-    /**
-     * function to setup the game instructions
-     * 
-     * @param x x-coordinate of instruction
-     * @param y y-coordinate of instruction
-     */
-    private void setupDescription(int x, int y) {
-        instructionsLabel = new JLabel("Chose Game Mode");
-        instructionsLabel.setFont(new Font("SANS_SERIF", Font.PLAIN, 22));
-        instructionsLabel.setBounds(x, y, 200, 20);
-        instructionsLabel.setForeground(Color.white);
-        instructionsLabel.setBackground(Color.cyan);
-        this.add(instructionsLabel);
-    }
-
-    /**
-     * function to draw the Tic Tac Toe grid
-     * 
-     * @param g Graphics g
-     */
-    private void drawGameBoard(Graphics g) {
-        g.setColor(Color.gray);
-
-        for (int i = 1; i < 3; i++) {
-            // vertical lines
-            g.fillRect(COL_START + UNIT * i, ROW_START, 2, 3 * UNIT);
-            // horizontal lines
-            g.fillRect(COL_START, ROW_START + UNIT * i, 3 * UNIT, 2);
-        }
+        repaint();
     }
 
     /**
@@ -327,6 +231,10 @@ public class Panel extends JPanel {
         }
     }
 
+    /*
+     * getter setter methods
+     */
+
     /**
      * @return moveNum
      */
@@ -339,5 +247,95 @@ public class Panel extends JPanel {
      */
     public static void setMoveNum(int val) {
         moveNum = val;
+    }
+
+    /*
+     * SETUP FUNCTIONS - uses Setup class
+     */
+
+    /**
+     * function to set up all function buttons
+     */
+    private void setupFunctionButtons() {
+        resetButton = new JButton("Reset");
+        singlePlayerButton = new JButton("1 Player");
+        multiPlayerButton = new JButton("2 Players");
+
+        Setup.functionButtons(resetButton, singlePlayerButton, multiPlayerButton, e -> resetGame(), e -> playComputer(),
+                e -> playFriend());
+
+        this.add(resetButton);
+        this.add(singlePlayerButton);
+        this.add(multiPlayerButton);
+    }
+
+    /**
+     * function to set up all 9 JBUttons
+     */
+    private void setupGameButtons() {
+        buttons = new JButton[3][3];
+
+        for (int i = 0; i < buttons.length; i++) {
+            for (int j = 0; j < buttons.length; j++) {
+
+                buttons[i][j] = new JButton();
+                Setup.gameButtons(buttons[i][j], i, j, e -> actionPerformed(e.getActionCommand()));
+                this.add(buttons[i][j]);
+            }
+        }
+    }
+
+    /**
+     * function to set up the copyright label
+     */
+    private void setUpCopyright() {
+        copyrightLabel = new JLabel("Copyright \u00A9 2024 Sebastian Sonne");
+        Setup.copyright(copyrightLabel);
+        this.add(copyrightLabel);
+    }
+
+    /**
+     * function to draw the title screen
+     */
+    private void setupTitleScreen() {
+        setupTitle(130, 30);
+        setupDescription(150, 200);
+        setUpCopyright();
+        setupFunctionButtons();
+    }
+
+    /**
+     * function to setup the game title
+     * 
+     * @param x x-coordinate of title
+     * @param y y-coordinate of title
+     */
+    private void setupTitle(int x, int y) {
+        titleLabel = new JLabel("Tic Tac Toe");
+        Setup.title(titleLabel, x, y);
+        this.add(titleLabel);
+    }
+
+    /**
+     * function to setup the game instructions
+     * 
+     * @param x x-coordinate of instruction
+     * @param y y-coordinate of instruction
+     */
+    private void setupDescription(int x, int y) {
+        instructionsLabel = new JLabel("Chose Game Mode");
+        Setup.description(instructionsLabel, x, y);
+        this.add(instructionsLabel);
+    }
+
+    /**
+     * function to set up the gameBoard by parsing an image
+     */
+    private void setupGameBoard() {
+        try {
+            this.add(Setup.gameBoard());
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error loading game board image: " + e.getMessage(), "IO Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

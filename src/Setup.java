@@ -4,7 +4,12 @@ import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
@@ -134,6 +139,31 @@ public class Setup {
         titleLabel.setBounds(x, y, 300, 50);
         titleLabel.setForeground(Color.white);
         titleLabel.setBackground(Color.blue);
+    }
+
+    /**
+     * function to setup the description JLabel
+     * @param instructionLabel description JLabel
+     * @param x x-coordinate of JLabel
+     * @param y y-ccordinate of JLabel
+     */
+    public static void description(JLabel instructionLabel, int x, int y) {
+        instructionLabel.setFont(new Font("SANS_SERIF", Font.PLAIN, 22));
+        instructionLabel.setBounds(x, y, 200, 20);
+        instructionLabel.setForeground(Color.white);
+        instructionLabel.setBackground(Color.cyan);
+    }
+
+    /**
+     * function to set up the gameBoard image
+     * @return gameBoard image
+     * @throws IOException 
+     */
+    public static JLabel gameBoard() throws IOException {
+        BufferedImage myPicture = ImageIO.read(new File("src/lib/gameBoard.png"));
+        JLabel picLabel = new JLabel(new ImageIcon(myPicture));
+        picLabel.setBounds(102, 102, 296, 296);
+        return picLabel;
     }
 
     /**
