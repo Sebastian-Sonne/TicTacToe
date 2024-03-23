@@ -1,14 +1,9 @@
 import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -23,10 +18,10 @@ import javax.swing.JPanel;
  * @version v1 16.03.2024
  */
 public class Panel extends JPanel {
-    private final int SCREEN_WIDTH = 500;
-    private final int SCREEN_HEIGHT = 500;
+    public static final int SCREEN_WIDTH = 500;
+    public static final int SCREEN_HEIGHT = 500;
     private final int UNIT = 100;
-    private final int GAP = 2;
+    public final int GAP = 2;
     private final int COL_START = SCREEN_WIDTH / 5;
     private final int ROW_START = SCREEN_HEIGHT / 5;
 
@@ -43,6 +38,7 @@ public class Panel extends JPanel {
     private boolean wasEvaluated;
     private boolean initialLoad;
     private boolean drawBoard;
+    private boolean singlePlayer;
 
     /**
      * cunstructor of Panel class. initializes and starts game
@@ -62,43 +58,14 @@ public class Panel extends JPanel {
 
     /**
      * function to set up all function buttons
-     * 
-     * @param resetButtonVisible        visibility of reset button
-     * @param singlePlayerButtonVisible visibility of singleplayer button
-     * @param multiPlayerButtonVisible  visibility of multiplayer button
      */
     private void setupFunctionButtons() {
         resetButton = new JButton("Reset");
         singlePlayerButton = new JButton("1 Player");
         multiPlayerButton = new JButton("2 Players");
 
-        JButton[] buttons = { resetButton, singlePlayerButton, multiPlayerButton };
-        for (JButton button : buttons) {
-            button.setBorder(null);
-            button.setFont(new Font("SANS_SERIF", Font.BOLD, 24));
-            button.setBackground(Color.darkGray);
-            button.setForeground(Color.white);
-            button.setFocusable(false);
-            button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-            this.add(button);
-        }
-
-        resetButton.setBackground(Color.black);
-        resetButton.setForeground(Color.gray);
-        resetButton.setFont(new Font("SANS_SERIF", Font.PLAIN, 16));
-
-        resetButton.setBounds(5, SCREEN_HEIGHT - 50, 50, 20);
-        singlePlayerButton.setBounds(25, 250, 200, 75);
-        multiPlayerButton.setBounds(SCREEN_WIDTH - 25 - 200, 250, 200, 75);
-
-        resetButton.setVisible(false);
-        singlePlayerButton.setVisible(true);
-        multiPlayerButton.setVisible(true);
-
-        resetButton.addActionListener(e -> resetGame());
-        singlePlayerButton.addActionListener(e -> playComputer());
-        multiPlayerButton.addActionListener(e -> playFriend());
+        Setup.functionButtons(resetButton, singlePlayerButton, multiPlayerButton, e -> resetGame(), e -> playComputer(),
+                e -> playFriend());
 
         this.add(resetButton);
         this.add(singlePlayerButton);
@@ -113,21 +80,9 @@ public class Panel extends JPanel {
 
         for (int i = 0; i < buttons.length; i++) {
             for (int j = 0; j < buttons.length; j++) {
+
                 buttons[i][j] = new JButton();
-                buttons[i][j].setBorder(null);
-                buttons[i][j].setFont(new Font("SANS_SERIF", Font.PLAIN, 96));
-                buttons[i][j].setBackground(Color.red);
-                buttons[i][j].setForeground(Color.white);
-                buttons[i][j].setFocusable(false);
-                buttons[i][j].setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-                int x = COL_START + UNIT * i;
-                int y = ROW_START + UNIT * j;
-                buttons[i][j].setBounds(x + GAP, y + GAP, UNIT - GAP, UNIT - GAP);
-
-                buttons[i][j].addActionListener(e -> actionPerformed(e.getActionCommand()));
-                buttons[i][j].setActionCommand(i + ":" + j);
-
+                Setup.gameButtons(buttons[i][j], i, j, e -> actionPerformed(e.getActionCommand()));
                 this.add(buttons[i][j]);
             }
         }
@@ -138,59 +93,23 @@ public class Panel extends JPanel {
      */
     private void setUpCopyright() {
         copyrightLabel = new JLabel("Copyright \u00A9 2024 Sebastian Sonne");
-        copyrightLabel.setFont(new Font("SANS_SERIF", Font.PLAIN, 12));
-        copyrightLabel.setForeground(Color.gray);
-
-        copyrightLabel.setBounds(10, 475, 200, 15);
-        copyrightLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        copyrightLabel.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
-                openURL("https://github.com/sebastian-sonne/ticTacToe");
-            }
-
-            @Override
-            public void mousePressed(java.awt.event.MouseEvent e) {
-                // not relevent
-            }
-
-            @Override
-            public void mouseReleased(java.awt.event.MouseEvent e) {
-                // not relevent
-            }
-
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                // not relevent
-            }
-
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                // not relevent
-            }
-
-        });
-
+        Setup.copyright(copyrightLabel);
         this.add(copyrightLabel);
     }
 
     /**
-     * function to open a url in the default browser
-     * 
-     * @param url url to be opend
+     * function to start the game with one player aka against the computer
      */
-    private void openURL(String url) {
-        try {
-            Desktop.getDesktop().browse(new java.net.URI(url));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     private void playComputer() {
         changeToGame();
-        // TODO implement computer
+        singlePlayer = true;
+    }
+
+    private void computerMove() {
+        String[][] gameState = Computer.copyToStringArray(buttons);
+        int[] computerMove = Computer.miniMax(gameState);
+        int row = computerMove[1], col = computerMove[2];
+        setPlayerAction(row, col);
     }
 
     /**
@@ -198,9 +117,12 @@ public class Panel extends JPanel {
      */
     private void playFriend() {
         changeToGame();
-        // TODO implement 
+        singlePlayer = false;
     }
 
+    /**
+     * function to change from the title screen to game screen
+     */
     private void changeToGame() {
         hideTitleScreen();
         resetButton.setVisible(true);
@@ -287,6 +209,11 @@ public class Panel extends JPanel {
         draw(g);
     }
 
+    /**
+     * function of paintcomponent
+     * 
+     * @param g Grpahics
+     */
     public void draw(Graphics g) {
         if (initialLoad) {
             setupTitleScreen();
@@ -325,15 +252,13 @@ public class Panel extends JPanel {
      */
     private void setupTitle(int x, int y) {
         titleLabel = new JLabel("Tic Tac Toe");
-        titleLabel.setFont(new Font("SANS_SERIF", Font.PLAIN, 48));
-        titleLabel.setBounds(x, y, 300, 50);
-        titleLabel.setForeground(Color.white);
-        titleLabel.setBackground(Color.blue);
+        Setup.title(titleLabel, x, y);
         this.add(titleLabel);
     }
 
     /**
      * function to setup the game instructions
+     * 
      * @param x x-coordinate of instruction
      * @param y y-coordinate of instruction
      */

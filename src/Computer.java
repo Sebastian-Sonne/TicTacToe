@@ -3,7 +3,7 @@ import javax.swing.JButton;
 public class Computer {
 
     /**
-     * function to find whose players turn it is
+     * function to get player turn based on move Num
      * 
      * @param buttons current game state
      * @return O, if Player O turn; X if Player X turn
@@ -13,6 +13,11 @@ public class Computer {
         return (moveNum % 2 == 0) ? "X" : "O";
     }
 
+    /**
+     * function to get player turn based on gameState
+     * @param gameState current gameState
+     * @return "O" or "X"
+     */
     private static String getPlayerTurn(String[][] gameState) {
         int countO = 0, countX = 0;
 
