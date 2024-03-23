@@ -9,7 +9,10 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 
 /**
- * ! TODO add description
+ * Class to setup elements of JPanel
+ * 
+ * @author Sebastian Sonne
+ * @version v1 22.03.2024
  */
 public class Setup {
     private static final int UNIT = 100;
