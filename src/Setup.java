@@ -25,6 +25,10 @@ public class Setup {
     private static final int COL_START = Panel.SCREEN_WIDTH / 5;
     private static final int ROW_START = Panel.SCREEN_HEIGHT / 5;
 
+    private static JButton resetButton;
+    private static JButton singlePlayerButton;
+    private static JButton multiPlayerButton;
+
     /**
      * function to set up the function buttons
      * 
@@ -35,9 +39,13 @@ public class Setup {
      * @param singlePlayerAction action of singlePlayer JButton
      * @param multiPlayerAction  action of multiPlayer JButton
      */
-    public static void functionButtons(JButton resetButton, JButton singlePlayerButton, JButton multiPlayerButton,
-            ActionListener resetAction, ActionListener singlePlayerAction,
+    public static void functionButtons(Panel panel, ActionListener resetAction, ActionListener singlePlayerAction,
             ActionListener multiPlayerAction) {
+
+        resetButton = new JButton("Reset");
+        singlePlayerButton = new JButton("1 Player");
+        multiPlayerButton = new JButton("2 Players");
+
         JButton[] buttons = { resetButton, singlePlayerButton, multiPlayerButton };
         for (JButton button : buttons) {
             button.setBorder(null);
@@ -63,13 +71,18 @@ public class Setup {
         resetButton.addActionListener(resetAction);
         singlePlayerButton.addActionListener(singlePlayerAction);
         multiPlayerButton.addActionListener(multiPlayerAction);
+
+        panel.add(resetButton);
+        panel.add(singlePlayerButton);
+        panel.add(multiPlayerButton);
     }
 
     /**
      * function to set up a game button
-     * @param button JButton
-     * @param row row of JButton
-     * @param col col of JButton
+     * 
+     * @param button       JButton
+     * @param row          row of JButton
+     * @param col          col of JButton
      * @param buttonAction action of JButton
      */
     public static void gameButtons(JButton button, int row, int col, ActionListener buttonAction) {
@@ -90,6 +103,7 @@ public class Setup {
 
     /**
      * function to set up copyright JLabel
+     * 
      * @param copyrightLabel (c) Label
      */
     public static void copyright(JLabel copyrightLabel) {
@@ -130,9 +144,10 @@ public class Setup {
 
     /**
      * function to setup the titel JLabel
+     * 
      * @param titleLabel title JLabel
-     * @param x x-coordinate of JLabel
-     * @param y y-ccordinate of JLabel
+     * @param x          x-coordinate of JLabel
+     * @param y          y-ccordinate of JLabel
      */
     public static void title(JLabel titleLabel, int x, int y) {
         titleLabel.setFont(new Font("SANS_SERIF", Font.PLAIN, 48));
@@ -143,9 +158,10 @@ public class Setup {
 
     /**
      * function to setup the description JLabel
+     * 
      * @param instructionLabel description JLabel
-     * @param x x-coordinate of JLabel
-     * @param y y-ccordinate of JLabel
+     * @param x                x-coordinate of JLabel
+     * @param y                y-ccordinate of JLabel
      */
     public static void description(JLabel instructionLabel, int x, int y) {
         instructionLabel.setFont(new Font("SANS_SERIF", Font.PLAIN, 22));
@@ -156,8 +172,9 @@ public class Setup {
 
     /**
      * function to set up the gameBoard image
+     * 
      * @return gameBoard image
-     * @throws IOException 
+     * @throws IOException
      */
     public static JLabel gameBoard() throws IOException {
         BufferedImage myPicture = ImageIO.read(new File("src/lib/gameBoard.png"));
@@ -177,5 +194,21 @@ public class Setup {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /*
+     * get & set methods
+     */
+
+    public static JButton getResetButton() {
+        return resetButton;
+    }
+
+    public static JButton getSinglePlayerButton() {
+        return singlePlayerButton;
+    }
+
+    public static JButton getMultiPlayerButton() {
+        return multiPlayerButton;
     }
 }

@@ -21,9 +21,6 @@ public class Panel extends JPanel {
     public static final int SCREEN_HEIGHT = 500;
 
     private JButton[][] buttons;
-    private JButton resetButton;
-    private JButton singlePlayerButton;
-    private JButton multiPlayerButton;
 
     private JLabel copyrightLabel;
     private JLabel titleLabel;
@@ -75,7 +72,7 @@ public class Panel extends JPanel {
      */
     private void changeToGame() {
         hideTitleScreen();
-        resetButton.setVisible(true);
+        Setup.getResetButton().setVisible(true);
 
         setupGameButtons();
         setupGameBoard();
@@ -158,8 +155,8 @@ public class Panel extends JPanel {
      * function to hide the title screen elements
      */
     private void hideTitleScreen() {
-        singlePlayerButton.setVisible(false);
-        multiPlayerButton.setVisible(false);
+        Setup.getSinglePlayerButton().setVisible(false);
+        Setup.getMultiPlayerButton().setVisible(false);
         instructionsLabel.setVisible(false);
         repaint();
     }
@@ -232,7 +229,7 @@ public class Panel extends JPanel {
 
     /*
      * game functions
-    */
+     */
 
     /**
      * function to disable game buttons
@@ -254,7 +251,7 @@ public class Panel extends JPanel {
                 button.setEnabled(true);
             }
         }
-     }
+    }
 
     /*
      * getter setter methods
@@ -277,22 +274,6 @@ public class Panel extends JPanel {
     /*
      * SETUP FUNCTIONS - uses Setup class
      */
-
-    /**
-     * function to set up all function buttons
-     */
-    private void setupFunctionButtons() {
-        resetButton = new JButton("Reset");
-        singlePlayerButton = new JButton("1 Player");
-        multiPlayerButton = new JButton("2 Players");
-
-        Setup.functionButtons(resetButton, singlePlayerButton, multiPlayerButton, e -> resetGame(), e -> playComputer(),
-                e -> playFriend());
-
-        this.add(resetButton);
-        this.add(singlePlayerButton);
-        this.add(multiPlayerButton);
-    }
 
     /**
      * function to set up all 9 JBUttons
@@ -326,7 +307,8 @@ public class Panel extends JPanel {
         setupTitle(130, 30);
         setupDescription(150, 200);
         setUpCopyright();
-        setupFunctionButtons();
+        Setup.functionButtons(this, e -> resetGame(), e -> playComputer(),
+                e -> playFriend());
     }
 
     /**
