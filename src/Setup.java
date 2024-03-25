@@ -6,12 +6,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /**
  * Class to setup elements of JPanel for TicTacToe game
@@ -25,19 +26,24 @@ public class Setup {
     private static final int COL_START = Panel.SCREEN_WIDTH / 5;
     private static final int ROW_START = Panel.SCREEN_HEIGHT / 5;
 
+    private static JButton[][] buttons;
+
     private static JButton resetButton;
     private static JButton singlePlayerButton;
     private static JButton multiPlayerButton;
 
+    private static JLabel copyrightLabel;
+    private static JLabel titleLabel;
+    private static JLabel descriptionLabel;
+    private static JLabel gameBoard;
+
     /**
-     * function to set up the function buttons
+     * function to set up function buttons
      * 
-     * @param resetButton        reset JButton
-     * @param singlePlayerButton singlePlayer JButton
-     * @param multiPlayerButton  multiPlayer JButton
-     * @param resetAction        action of reset JButton
-     * @param singlePlayerAction action of singlePlayer JButton
-     * @param multiPlayerAction  action of multiPlayer JButton
+     * @param panel              JPanel to which buttons are added
+     * @param resetAction        action which resetButton is executing
+     * @param singlePlayerAction action which singlePlayerButton is executing
+     * @param multiPlayerAction  action which multiPlayerButton is executing
      */
     public static void functionButtons(Panel panel, ActionListener resetAction, ActionListener singlePlayerAction,
             ActionListener multiPlayerAction) {
@@ -78,41 +84,49 @@ public class Setup {
     }
 
     /**
-     * function to set up a game button
+     * function to setup game buttons
      * 
-     * @param button       JButton
-     * @param row          row of JButton
-     * @param col          col of JButton
-     * @param buttonAction action of JButton
+     * @param panel        JPanel to which buttons are added
+     * @param buttonAction Action that buttons perform
      */
-    public static void gameButtons(JButton button, int row, int col, ActionListener buttonAction) {
-        button.setBorder(null);
-        button.setFont(new Font("SANS_SERIF", Font.PLAIN, 96));
-        button.setBackground(Color.black);
-        button.setForeground(Color.white);
-        button.setFocusable(false);
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    public static void gameButtons(JPanel panel, ActionListener buttonAction) {
+        buttons = new JButton[3][3];
 
-        int x = COL_START + UNIT * row;
-        int y = ROW_START + UNIT * col;
-        button.setBounds(x + GAP, y + GAP, UNIT - GAP, UNIT - GAP);
+        for (int i = 0; i < buttons.length; i++) {
+            for (int j = 0; j < buttons.length; j++) {
+                buttons[i][j] = new JButton();
 
-        button.addActionListener(buttonAction);
-        button.setActionCommand(row + ":" + col);
+                buttons[i][j].setBorder(null);
+                buttons[i][j].setFont(new Font("SANS_SERIF", Font.PLAIN, 96));
+                buttons[i][j].setBackground(Color.black);
+                buttons[i][j].setForeground(Color.white);
+                buttons[i][j].setFocusable(false);
+                buttons[i][j].setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+                int x = COL_START + UNIT * i;
+                int y = ROW_START + UNIT * j;
+                buttons[i][j].setBounds(x + GAP, y + GAP, UNIT - GAP, UNIT - GAP);
+
+                buttons[i][j].addActionListener(buttonAction);
+                buttons[i][j].setActionCommand(i + ":" + j);
+
+                panel.add(buttons[i][j]);
+            }
+        }
     }
 
     /**
-     * function to set up copyright JLabel
+     * function to set up the copyright Label
      * 
-     * @param copyrightLabel (c) Label
+     * @param panel JPanel to which the Label is added
      */
-    public static void copyright(JLabel copyrightLabel) {
+    public static void copyrightLabel(JPanel panel) {
+        copyrightLabel = new JLabel("Copyright \u00A9 2024 Sebastian Sonne");
+
         copyrightLabel.setFont(new Font("SANS_SERIF", Font.PLAIN, 12));
         copyrightLabel.setForeground(Color.gray);
-
         copyrightLabel.setBounds(10, 475, 200, 15);
         copyrightLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
         copyrightLabel.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -140,47 +154,57 @@ public class Setup {
             }
 
         });
+
+        panel.add(copyrightLabel);
     }
 
     /**
      * function to setup the titel JLabel
      * 
-     * @param titleLabel title JLabel
-     * @param x          x-coordinate of JLabel
-     * @param y          y-ccordinate of JLabel
+     * @param panel JPanel to which the Label is added
      */
-    public static void title(JLabel titleLabel, int x, int y) {
+    public static void titleLabel(JPanel panel) {
+        titleLabel = new JLabel("Tic Tac Toe");
+
         titleLabel.setFont(new Font("SANS_SERIF", Font.PLAIN, 48));
-        titleLabel.setBounds(x, y, 300, 50);
+        titleLabel.setBounds(130, 30, 300, 50);
         titleLabel.setForeground(Color.white);
         titleLabel.setBackground(Color.blue);
+
+        panel.add(titleLabel);
     }
 
     /**
-     * function to setup the description JLabel
+     * function to set up description Label
      * 
-     * @param instructionLabel description JLabel
-     * @param x                x-coordinate of JLabel
-     * @param y                y-ccordinate of JLabel
+     * @param panel JPanel to which the Label is added
      */
-    public static void description(JLabel instructionLabel, int x, int y) {
-        instructionLabel.setFont(new Font("SANS_SERIF", Font.PLAIN, 22));
-        instructionLabel.setBounds(x, y, 200, 20);
-        instructionLabel.setForeground(Color.white);
-        instructionLabel.setBackground(Color.cyan);
+    public static void descriptionLabel(JPanel panel) {
+        descriptionLabel = new JLabel("Chose Game Mode");
+
+        descriptionLabel.setFont(new Font("SANS_SERIF", Font.PLAIN, 22));
+        descriptionLabel.setBounds(150, 200, 200, 20);
+        descriptionLabel.setForeground(Color.white);
+        descriptionLabel.setBackground(Color.cyan);
+
+        panel.add(descriptionLabel);
     }
 
     /**
-     * function to set up the gameBoard image
-     * 
-     * @return gameBoard image
-     * @throws IOException
+     * function to set up game Board 
+     * @param panel JPanel to which board is added
      */
-    public static JLabel gameBoard() throws IOException {
-        BufferedImage myPicture = ImageIO.read(new File("src/lib/gameBoard.png"));
-        JLabel picLabel = new JLabel(new ImageIcon(myPicture));
-        picLabel.setBounds(102, 102, 296, 296);
-        return picLabel;
+    public static void gameBoard(JPanel panel) {
+        try {
+            BufferedImage gameBoardImg = ImageIO.read(new File("src/lib/gameBoard.png"));
+            gameBoard = new JLabel(new ImageIcon(gameBoardImg));
+            gameBoard.setBounds(102, 102, 296, 296);
+
+            panel.add(gameBoard);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error loading game board image: " + e.getMessage(), "IO Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -210,5 +234,25 @@ public class Setup {
 
     public static JButton getMultiPlayerButton() {
         return multiPlayerButton;
+    }
+
+    public static JButton[][] getGameButtons() {
+        return buttons;
+    }
+
+    public static JLabel getCopyrightLabel() {
+        return copyrightLabel;
+    }
+
+    public static JLabel getTitleLabel() {
+        return titleLabel;
+    }
+
+    public static JLabel getDescriptionLabel() {
+        return descriptionLabel;
+    }
+
+    public static JLabel getGameBoard() {
+        return gameBoard;
     }
 }

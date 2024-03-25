@@ -19,13 +19,7 @@ import javax.swing.JPanel;
 public class Panel extends JPanel {
     public static final int SCREEN_WIDTH = 500;
     public static final int SCREEN_HEIGHT = 500;
-
-    private JButton[][] buttons;
-
-    private JLabel copyrightLabel;
-    private JLabel titleLabel;
-    private JLabel instructionsLabel;
-
+    
     private static int moveNum;
     private boolean singlePlayer;
 
@@ -53,7 +47,7 @@ public class Panel extends JPanel {
     }
 
     private void computerMove() {
-        String[][] gameState = Computer.copyToStringArray(buttons);
+        String[][] gameState = Computer.copyToStringArray(Setup.getGameButtons());
         int[] computerMove = Computer.miniMax(gameState);
         int row = computerMove[1], col = computerMove[2];
         setPlayerAction(row, col);
@@ -74,8 +68,8 @@ public class Panel extends JPanel {
         hideTitleScreen();
         Setup.getResetButton().setVisible(true);
 
-        setupGameButtons();
-        setupGameBoard();
+        Setup.gameButtons(this, e -> actionPerformed(e.getActionCommand()));
+        Setup.gameBoard(this);
     }
 
     /**
@@ -85,6 +79,8 @@ public class Panel extends JPanel {
      * @param col of button
      */
     private void setPlayerAction(int row, int col) {
+        JButton[][] buttons = Setup.getGameButtons();
+
         // set button text: "O", or "X"
         if (buttons[row][col].getText().equals("")) {
             buttons[row][col].setText(Computer.getPlayerTurn());
@@ -144,6 +140,8 @@ public class Panel extends JPanel {
         setMoveNum(0);
         enableGameButtons();
 
+        JButton[][] buttons = Setup.getGameButtons();
+
         for (int i = 0; i < buttons.length; i++) {
             for (int j = 0; j < buttons[i].length; j++) {
                 buttons[i][j].setText("");
@@ -157,7 +155,7 @@ public class Panel extends JPanel {
     private void hideTitleScreen() {
         Setup.getSinglePlayerButton().setVisible(false);
         Setup.getMultiPlayerButton().setVisible(false);
-        instructionsLabel.setVisible(false);
+        Setup.getDescriptionLabel().setVisible(false);
         repaint();
     }
 
@@ -235,7 +233,7 @@ public class Panel extends JPanel {
      * function to disable game buttons
      */
     private void disableGameButtons() {
-        for (JButton[] buttonRow : buttons) {
+        for (JButton[] buttonRow : Setup.getGameButtons()) {
             for (JButton button : buttonRow) {
                 button.setEnabled(false);
             }
@@ -246,7 +244,7 @@ public class Panel extends JPanel {
      * function to enable game buttons
      */
     private void enableGameButtons() {
-        for (JButton[] buttonRow : buttons) {
+        for (JButton[] buttonRow : Setup.getGameButtons()) {
             for (JButton button : buttonRow) {
                 button.setEnabled(true);
             }
@@ -275,75 +273,15 @@ public class Panel extends JPanel {
      * SETUP FUNCTIONS - uses Setup class
      */
 
-    /**
-     * function to set up all 9 JBUttons
-     */
-    private void setupGameButtons() {
-        buttons = new JButton[3][3];
-
-        for (int i = 0; i < buttons.length; i++) {
-            for (int j = 0; j < buttons.length; j++) {
-
-                buttons[i][j] = new JButton();
-                Setup.gameButtons(buttons[i][j], i, j, e -> actionPerformed(e.getActionCommand()));
-                this.add(buttons[i][j]);
-            }
-        }
-    }
-
-    /**
-     * function to set up the copyright label
-     */
-    private void setUpCopyright() {
-        copyrightLabel = new JLabel("Copyright \u00A9 2024 Sebastian Sonne");
-        Setup.copyright(copyrightLabel);
-        this.add(copyrightLabel);
-    }
 
     /**
      * function to draw the title screen
      */
     private void setupTitleScreen() {
-        setupTitle(130, 30);
-        setupDescription(150, 200);
-        setUpCopyright();
+        Setup.titleLabel(this);
+        Setup.descriptionLabel(this);
+        Setup.copyrightLabel(this);
         Setup.functionButtons(this, e -> resetGame(), e -> playComputer(),
                 e -> playFriend());
-    }
-
-    /**
-     * function to setup the game title
-     * 
-     * @param x x-coordinate of title
-     * @param y y-coordinate of title
-     */
-    private void setupTitle(int x, int y) {
-        titleLabel = new JLabel("Tic Tac Toe");
-        Setup.title(titleLabel, x, y);
-        this.add(titleLabel);
-    }
-
-    /**
-     * function to setup the game instructions
-     * 
-     * @param x x-coordinate of instruction
-     * @param y y-coordinate of instruction
-     */
-    private void setupDescription(int x, int y) {
-        instructionsLabel = new JLabel("Chose Game Mode");
-        Setup.description(instructionsLabel, x, y);
-        this.add(instructionsLabel);
-    }
-
-    /**
-     * function to set up the gameBoard by parsing an image
-     */
-    private void setupGameBoard() {
-        try {
-            this.add(Setup.gameBoard());
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error loading game board image: " + e.getMessage(), "IO Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
     }
 }
