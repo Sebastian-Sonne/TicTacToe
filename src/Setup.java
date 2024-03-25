@@ -29,6 +29,7 @@ public class Setup {
     private static JButton[][] buttons;
 
     private static JButton resetButton;
+    private static JButton goBackButton;
     private static JButton singlePlayerButton;
     private static JButton multiPlayerButton;
 
@@ -45,14 +46,16 @@ public class Setup {
      * @param singlePlayerAction action which singlePlayerButton is executing
      * @param multiPlayerAction  action which multiPlayerButton is executing
      */
-    public static void functionButtons(Panel panel, ActionListener resetAction, ActionListener singlePlayerAction,
+    public static void functionButtons(Panel panel, ActionListener resetAction, ActionListener goBackAction,
+            ActionListener singlePlayerAction,
             ActionListener multiPlayerAction) {
 
         resetButton = new JButton("Reset");
+        goBackButton = new JButton("Go Back");
         singlePlayerButton = new JButton("1 Player");
         multiPlayerButton = new JButton("2 Players");
 
-        JButton[] buttons = { resetButton, singlePlayerButton, multiPlayerButton };
+        JButton[] buttons = { resetButton, goBackButton, singlePlayerButton, multiPlayerButton };
         for (JButton button : buttons) {
             button.setBorder(null);
             button.setFont(new Font("SANS_SERIF", Font.BOLD, 24));
@@ -63,22 +66,31 @@ public class Setup {
         }
 
         resetButton.setBackground(Color.black);
+        goBackButton.setBackground(Color.black);
+
         resetButton.setForeground(Color.gray);
+        goBackButton.setForeground(Color.gray);
+
         resetButton.setFont(new Font("SANS_SERIF", Font.PLAIN, 16));
+        goBackButton.setFont(new Font("SANS_SERIF", Font.PLAIN, 16));
 
         resetButton.setBounds(5, Panel.SCREEN_HEIGHT - 50, 50, 20);
+        goBackButton.setBounds(0, 10, 75, 30);
         singlePlayerButton.setBounds(25, 250, 200, 75);
         multiPlayerButton.setBounds(Panel.SCREEN_WIDTH - 25 - 200, 250, 200, 75);
 
         resetButton.setVisible(false);
+        goBackButton.setVisible(false);
         singlePlayerButton.setVisible(true);
         multiPlayerButton.setVisible(true);
 
         resetButton.addActionListener(resetAction);
+        goBackButton.addActionListener(goBackAction);
         singlePlayerButton.addActionListener(singlePlayerAction);
         multiPlayerButton.addActionListener(multiPlayerAction);
 
         panel.add(resetButton);
+        panel.add(goBackButton);
         panel.add(singlePlayerButton);
         panel.add(multiPlayerButton);
     }
@@ -227,6 +239,10 @@ public class Setup {
 
     public static JButton getResetButton() {
         return resetButton;
+    }
+
+    public static JButton getGoBackButton() {
+        return goBackButton;
     }
 
     public static JButton getSinglePlayerButton() {

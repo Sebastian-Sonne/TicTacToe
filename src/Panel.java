@@ -22,6 +22,7 @@ public class Panel extends JPanel {
     
     private static int moveNum;
     private boolean singlePlayer;
+    private boolean initialLoad;
 
     /**
      * cunstructor of Panel class. initializes and starts game
@@ -34,6 +35,7 @@ public class Panel extends JPanel {
         this.setLayout(null);
 
         moveNum = 0;
+        initialLoad = true;
 
         setupTitleScreen();
     }
@@ -42,8 +44,17 @@ public class Panel extends JPanel {
      * function to start the game with one player aka against the computer
      */
     private void playComputer() {
-        changeToGame();
         singlePlayer = true;
+
+        if (initialLoad) {
+            initialLoad = false;
+            setupGameScreen();
+        } else {
+            hideTitleScreen();
+            showGameScreen();
+        }
+        
+        //! computer logic
     }
 
     private void computerMove() {
@@ -57,19 +68,15 @@ public class Panel extends JPanel {
      * function to start game with two players
      */
     private void playFriend() {
-        changeToGame();
+        if (initialLoad) {
+            initialLoad = false;
+            setupGameScreen();
+        } else {
+            hideTitleScreen();
+            showGameScreen();
+        }
+        
         singlePlayer = false;
-    }
-
-    /**
-     * function to change from the title screen to game screen
-     */
-    private void changeToGame() {
-        hideTitleScreen();
-        Setup.getResetButton().setVisible(true);
-
-        Setup.gameButtons(this, e -> actionPerformed(e.getActionCommand()));
-        Setup.gameBoard(this);
     }
 
     /**
@@ -147,16 +154,6 @@ public class Panel extends JPanel {
                 buttons[i][j].setText("");
             }
         }
-    }
-
-    /**
-     * function to hide the title screen elements
-     */
-    private void hideTitleScreen() {
-        Setup.getSinglePlayerButton().setVisible(false);
-        Setup.getMultiPlayerButton().setVisible(false);
-        Setup.getDescriptionLabel().setVisible(false);
-        repaint();
     }
 
     /**
@@ -251,6 +248,107 @@ public class Panel extends JPanel {
         }
     }
 
+    /**
+     * function to hide the game buttons
+     */
+    private void hideGameButtons() {
+        for (JButton[] buttons : Setup.getGameButtons()) {
+            for (JButton button : buttons) {
+                button.setVisible(false);
+            }
+        }
+    }
+
+    /**
+     * function to show the game buttons
+     */
+    private void showGameButtons() {
+        for (JButton[] buttons : Setup.getGameButtons()) {
+            for (JButton button : buttons) {
+                button.setVisible(true);
+            }
+        }
+    }
+
+
+    /**
+     * function to hide the title screen elements
+     */
+    private void hideTitleScreen() {
+        Setup.getGoBackButton().setVisible(true);
+        Setup.getSinglePlayerButton().setVisible(false);
+        Setup.getMultiPlayerButton().setVisible(false);
+        Setup.getDescriptionLabel().setVisible(false);
+        repaint();
+    }
+
+    /**
+     * function to show the title screen elements
+     */
+    private void showTitleScreen() {
+        Setup.getSinglePlayerButton().setVisible(true);
+        Setup.getMultiPlayerButton().setVisible(true);
+        Setup.getDescriptionLabel().setVisible(true);
+    }
+
+    /**
+     * function to hide the game screen elements
+     */
+    private void hideGameScreen() {
+        Setup.getGameBoard().setVisible(false);
+        Setup.getResetButton().setVisible(false);
+        Setup.getGoBackButton().setVisible(false);
+        hideGameButtons();
+        repaint();
+    }
+
+    /**
+     * function to hide the game screen elements
+     */
+    private void showGameScreen() {
+        Setup.getGameBoard().setVisible(true);
+        Setup.getResetButton().setVisible(true);
+        Setup.getGoBackButton().setVisible(true);
+        showGameButtons();
+        repaint();
+    }
+    
+    /**
+     * action for go Back Button on game screen
+     */
+    private void goBackButtonAction() {
+        hideGameScreen();
+        showTitleScreen();
+    }
+
+
+    /*
+     * SETUP FUNCTIONS - uses Setup class
+     */
+
+    /**
+     * function to draw the title screen
+     */
+    private void setupTitleScreen() {
+        Setup.titleLabel(this);
+        Setup.descriptionLabel(this);
+        Setup.copyrightLabel(this);
+        Setup.functionButtons(this, e -> resetGame(), e -> goBackButtonAction(),e -> playComputer(),
+                e -> playFriend());
+    }
+
+    /**
+     * function to change from the title screen to game screen
+     */
+    private void setupGameScreen() {
+        hideTitleScreen();
+        Setup.getResetButton().setVisible(true);
+
+        Setup.gameButtons(this, e -> actionPerformed(e.getActionCommand()));
+        Setup.gameBoard(this);
+    }
+
+
     /*
      * getter setter methods
      */
@@ -269,19 +367,4 @@ public class Panel extends JPanel {
         moveNum = val;
     }
 
-    /*
-     * SETUP FUNCTIONS - uses Setup class
-     */
-
-
-    /**
-     * function to draw the title screen
-     */
-    private void setupTitleScreen() {
-        Setup.titleLabel(this);
-        Setup.descriptionLabel(this);
-        Setup.copyrightLabel(this);
-        Setup.functionButtons(this, e -> resetGame(), e -> playComputer(),
-                e -> playFriend());
-    }
 }
