@@ -191,7 +191,8 @@ public class Setup {
     }
 
     /**
-     * function to set up game Board 
+     * function to set up game Board
+     * 
      * @param panel JPanel to which board is added
      */
     public static void gameBoard(JPanel panel) {
