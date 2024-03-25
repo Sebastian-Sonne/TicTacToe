@@ -6,7 +6,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
- 
+
 /**
  * Panel class of Tic Tac Toe game, responsibel Panel setup and game master
  * https://github.com/sebastian-sonne/TicTacToe
@@ -204,31 +204,31 @@ public class Panel extends JPanel {
 
                 // Game Control Via KeyBoard
                 case KeyEvent.VK_1:
-                    setPlayerAction(0, 0);
+                    actionPerformed("0:0");
                     break;
                 case KeyEvent.VK_2:
-                    setPlayerAction(1, 0);
+                    actionPerformed("0:1");
                     break;
                 case KeyEvent.VK_3:
-                    setPlayerAction(2, 0);
+                    actionPerformed("0:2");
                     break;
                 case KeyEvent.VK_4:
-                    setPlayerAction(0, 1);
+                    actionPerformed("1:0");
                     break;
                 case KeyEvent.VK_5:
-                    setPlayerAction(1, 1);
+                    actionPerformed("1:1");
                     break;
                 case KeyEvent.VK_6:
-                    setPlayerAction(2, 1);
+                    actionPerformed("1:2");
                     break;
                 case KeyEvent.VK_7:
-                    setPlayerAction(0, 2);
+                    actionPerformed("2:0");
                     break;
                 case KeyEvent.VK_8:
-                    setPlayerAction(1, 2);
+                    actionPerformed("2:1");
                     break;
                 case KeyEvent.VK_9:
-                    setPlayerAction(2, 2);
+                    actionPerformed("2:2");
                     break;
             }
         }
