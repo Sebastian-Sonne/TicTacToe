@@ -8,35 +8,16 @@ import javax.swing.JButton;
  */
 public class Computer {
 
-    /**
-     * function to get player turn based on move Num
-     * 
-     * @param buttons current game state
-     * @return O, if Player O turn; X if Player X turn
-     */
-    public static String getPlayerTurn() {
-        int moveNum = Panel.getMoveNum();
-        return (moveNum % 2 == 0) ? "X" : "O";
-    }
 
     /**
      * function to get player turn based on gameState
+     * 
      * @param gameState current gameState
      * @return "O" or "X"
      */
-    private static String getPlayerTurn(String[][] gameState) {
-        int countO = 0, countX = 0;
-
-        for (int i = 0; i < gameState.length; i++) {
-            for (int j = 0; j < gameState[i].length; j++) {
-                if (gameState[i][j].equals("O")) {
-                    countO++;
-                } else if (gameState[i][j].equals("X")) {
-                    countX++;
-                }
-            }
-        }
-        return (countX > countO) ? "O" : "X";
+    public static String getPlayerTurn(String[][] gameState) {
+        int moveNum = getMoveNum(gameState);
+        return (moveNum % 2 == 0) ? "X" : "O";
     }
 
     /**
@@ -107,6 +88,7 @@ public class Computer {
                 if (gameState[i][j].equals("")) {
                     res[index][0] = i;
                     res[index][1] = j;
+
                     index++;
                 }
             }
@@ -124,7 +106,7 @@ public class Computer {
      * @return new gamestate
      */
     private static String[][] mergeMove(String[][] gameState, int row, int col) {
-        gameState[row][col] = getPlayerTurn();
+        gameState[row][col] = getPlayerTurn(gameState);
 
         return gameState;
     }
@@ -145,41 +127,6 @@ public class Computer {
         }
 
         return gameState;
-    }
-
-    /**
-     * function to find the move Number based on the gameState
-     * 
-     * @param gameState
-     * @return moveNumber
-     */
-    private static int getMoveNum(String[][] gameState) {
-        int count = 0;
-
-        for (int i = 0; i < gameState.length; i++) {
-            for (int j = 0; j < gameState[i].length; j++) {
-                if (!gameState[i][j].equals("-"))
-                    count++;
-            }
-        }
-        return count;
-    }
-
-    /**
-     * function to identify the next best move
-     * 
-     * @param gameState current gameState as String[][]
-     * @return int[] = {evalValue, row, col}
-     */
-    public static int[] miniMax(String[][] gameState) {
-        String playerTurn = getPlayerTurn(gameState);
-        int[] evaluation = { 10, -1, -1 }; // [0] = score, [1] = row, [2] = col
-
-        if (playerTurn.equals("O")) {
-            return minMove(gameState, evaluation);
-        } else {
-            return maxMove(gameState, evaluation);
-        }
     }
 
     public static void toString(String[][] gameState) {
@@ -209,30 +156,66 @@ public class Computer {
     }
 
     /**
+     * function to find the move Number based on the gameState
+     * 
+     * @param gameState
+     * @return moveNumber
+     */
+    private static int getMoveNum(String[][] gameState) {
+        int count = 0;
+
+        for (int i = 0; i < gameState.length; i++) {
+            for (int j = 0; j < gameState[i].length; j++) {
+                if (!gameState[i][j].equals(""))
+                    count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * function to identify the next best move
+     * 
+     * @param gameState current gameState as String[][]
+     * @return int[] = {evalValue, row, col}
+     */
+    public static Move miniMax(String[][] gameState) {
+        String playerTurn = getPlayerTurn(gameState);
+
+        if (playerTurn.equals("O")) {
+            System.out.println("minimizing");
+            return minMove(gameState);
+        } else {
+            System.out.println("Maximizing");
+            return maxMove(gameState);
+        }
+    }
+
+    /**
      * function to find the next best move for the maximizing player
      * 
      * @param gameState  current gameState String[][]
      * @param evaluation current eveluation array: int[] = {evalValue, row, col}
      * @return new eveluation array: int[] = {evalValue, row, col}
      */
-    private static int[] maxMove(String[][] gameState, int[] evaluation) {
-        evaluation[0] = Integer.MIN_VALUE;
-        int[][] moves = findMoves(gameState); // example {{2, 3}, {1, 2}}
-
+    private static Move maxMove(String[][] gameState) {
+        int[][] moves = findMoves(gameState);
+        Move bestMove = new Move(Integer.MIN_VALUE, -1, -1);
+    
         for (int[] move : moves) {
             String[][] newGameState = mergeMove(gameState, move[0], move[1]);
-            int newGameStateEval = eveluateGameState(newGameState);
-
-            if (newGameStateEval > evaluation[0]) {
-                evaluation[0] = newGameStateEval;
-                evaluation[1] = move[0];
-                evaluation[2] = move[1];
+            Move newGameStateEval = evaluateGameState(newGameState, move);
+    
+            if (newGameStateEval.evaluation > bestMove.evaluation) {
+                bestMove.evaluation = newGameStateEval.evaluation;
+                bestMove.row = move[0];
+                bestMove.col = move[1];
             }
-
         }
-
-        return evaluation;
+    
+        return bestMove;
     }
+    
 
     /**
      * function to find the next best move for the minimizing player
@@ -241,40 +224,39 @@ public class Computer {
      * @param evaluation current eveluation array: int[] = {evalValue, row, col}
      * @return new eveluation array: int[] = {evalValue, row, col}
      */
-    private static int[] minMove(String[][] gameState, int[] evaluation) {
-        evaluation[0] = Integer.MAX_VALUE;
-        int[][] moves = findMoves(gameState); // example {{2, 3}, {1, 2}}
-
+    private static Move minMove(String[][] gameState) {
+        int[][] moves = findMoves(gameState);
+        Move bestMove = new Move(Integer.MAX_VALUE, -1, -1);
+    
         for (int[] move : moves) {
             String[][] newGameState = mergeMove(gameState, move[0], move[1]);
-            int newGameStateEval = eveluateGameState(newGameState);
-
-            if (newGameStateEval < evaluation[0]) {
-                evaluation[0] = newGameStateEval;
-                evaluation[1] = move[0];
-                evaluation[2] = move[1];
+            Move newGameStateEval = evaluateGameState(newGameState, move);
+    
+            if (newGameStateEval.evaluation < bestMove.evaluation) {
+                bestMove.evaluation = newGameStateEval.evaluation;
+                bestMove.row = move[0];
+                bestMove.col = move[1];
             }
         }
-
-        return evaluation;
+    
+        return bestMove;
     }
 
     /**
      * function to eveluate a gameState
+     * 
      * @param gameState current GameState
      * @return eveluation score
      */
-    private static int eveluateGameState(String[][] gameState) {
+    private static Move evaluateGameState(String[][] gameState, int[] move) {
         int moveNum = getMoveNum(gameState);
         int gameEvaluation = isTerminal(gameState, moveNum);
 
         if (gameEvaluation == -1 || gameEvaluation == 0 || gameEvaluation == 1) {
-            //System.out.println("log");
-            return gameEvaluation;
+            // System.out.println("log");
+            return new Move(gameEvaluation, move[0], move[1]);
         } else {
-            int[] eveluation = miniMax(gameState);
-            //System.out.println("log 1");
-            return eveluation[0];
+            return miniMax(gameState);
         }
     }
 }

@@ -213,7 +213,7 @@ public class Setup {
      */
     public static void gameBoard(JPanel panel) {
         try {
-            BufferedImage gameBoardImg = ImageIO.read(new File("src/lib/gameBoard.png"));
+            BufferedImage gameBoardImg = ImageIO.read(new File("src/lib/gameBoard.png")); //! change for production
             gameBoard = new JLabel(new ImageIcon(gameBoardImg));
             gameBoard.setBounds(102, 102, 296, 296);
 

@@ -12,7 +12,7 @@ import javax.swing.JPanel;
  * https://github.com/sebastian-sonne/TicTacToe
  *
  * @author Sebastian Sonne
- * @version v1 16.03.2024
+ * @version v2 25.03.2024
  */
 public class Panel extends JPanel {
     public static final int SCREEN_WIDTH = 500;
@@ -59,9 +59,9 @@ public class Panel extends JPanel {
      * @return int[] eval: eval[0] = gameEval, eval[1] = best move row, eval[2] =
      *         best move col
      */
-    private int[] getComputerMove() {
+    private Move getComputerMove() {
         String[][] gameState = Computer.copyToStringArray(Setup.getGameButtons());
-        int[] eval = Computer.miniMax(gameState);
+        Move eval = Computer.miniMax(gameState);
         return eval;
     }
 
@@ -91,7 +91,7 @@ public class Panel extends JPanel {
 
         // set button text: "O", or "X"
         if (buttons[row][col].getText().equals("")) {
-            buttons[row][col].setText(Computer.getPlayerTurn());
+            buttons[row][col].setText(Computer.getPlayerTurn(Computer.copyToStringArray(Setup.getGameButtons())));
             buttons[row][col].setEnabled(false);
             setMoveNum(getMoveNum() + 1);
         }
@@ -180,9 +180,10 @@ public class Panel extends JPanel {
                 setPlayerAction(row, col);
 
                 int isTerminal = Computer.isTerminal(Computer.copyToStringArray(Setup.getGameButtons()), moveNum);
-                if (singlePlayer && isTerminal == 10) {
-                    int[] eval = getComputerMove();
-                    setPlayerAction(eval[1], eval[2]);
+                if (singlePlayer && isTerminal == 10 && moveNum % 2 == 1) {
+                    Move eval = getComputerMove();
+                    System.out.println("Eval: " + eval.evaluation);
+                    setPlayerAction(eval.row, eval.col);
                     Computer.toString(Computer.copyToStringArray(Setup.getGameButtons()));
                 }
 
