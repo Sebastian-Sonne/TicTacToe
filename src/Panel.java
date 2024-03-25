@@ -2,10 +2,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -19,7 +17,7 @@ import javax.swing.JPanel;
 public class Panel extends JPanel {
     public static final int SCREEN_WIDTH = 500;
     public static final int SCREEN_HEIGHT = 500;
-    
+
     private static int moveNum;
     private boolean singlePlayer;
     private boolean initialLoad;
@@ -53,15 +51,18 @@ public class Panel extends JPanel {
             hideTitleScreen();
             showGameScreen();
         }
-        
-        //! computer logic
     }
 
-    private void computerMove() {
+    /**
+     * function to get the next computer Move
+     * 
+     * @return int[] eval: eval[0] = gameEval, eval[1] = best move row, eval[2] =
+     *         best move col
+     */
+    private int[] getComputerMove() {
         String[][] gameState = Computer.copyToStringArray(Setup.getGameButtons());
-        int[] computerMove = Computer.miniMax(gameState);
-        int row = computerMove[1], col = computerMove[2];
-        setPlayerAction(row, col);
+        int[] eval = Computer.miniMax(gameState);
+        return eval;
     }
 
     /**
@@ -75,7 +76,7 @@ public class Panel extends JPanel {
             hideTitleScreen();
             showGameScreen();
         }
-        
+
         singlePlayer = false;
     }
 
@@ -157,7 +158,9 @@ public class Panel extends JPanel {
     }
 
     /**
-     * function to check for action events on buttons
+     * function executed on action on game buttons
+     * 
+     * @param actionCommand actionCommand of game button
      */
     public void actionPerformed(String actionCommand) {
         int row, col;
@@ -175,6 +178,14 @@ public class Panel extends JPanel {
                 row = Integer.parseInt(actionCommand.substring(0, 1));
                 col = Integer.parseInt(actionCommand.substring(2, 3));
                 setPlayerAction(row, col);
+
+                int isTerminal = Computer.isTerminal(Computer.copyToStringArray(Setup.getGameButtons()), moveNum);
+                if (singlePlayer && isTerminal == 10) {
+                    int[] eval = getComputerMove();
+                    setPlayerAction(eval[1], eval[2]);
+                    Computer.toString(Computer.copyToStringArray(Setup.getGameButtons()));
+                }
+
                 break;
         }
     }
@@ -270,7 +281,6 @@ public class Panel extends JPanel {
         }
     }
 
-
     /**
      * function to hide the title screen elements
      */
@@ -310,9 +320,12 @@ public class Panel extends JPanel {
         Setup.getResetButton().setVisible(true);
         Setup.getGoBackButton().setVisible(true);
         showGameButtons();
+        if (singlePlayer) {
+            resetGame();
+        }
         repaint();
     }
-    
+
     /**
      * action for go Back Button on game screen
      */
@@ -320,7 +333,6 @@ public class Panel extends JPanel {
         hideGameScreen();
         showTitleScreen();
     }
-
 
     /*
      * SETUP FUNCTIONS - uses Setup class
@@ -333,7 +345,7 @@ public class Panel extends JPanel {
         Setup.titleLabel(this);
         Setup.descriptionLabel(this);
         Setup.copyrightLabel(this);
-        Setup.functionButtons(this, e -> resetGame(), e -> goBackButtonAction(),e -> playComputer(),
+        Setup.functionButtons(this, e -> resetGame(), e -> goBackButtonAction(), e -> playComputer(),
                 e -> playFriend());
     }
 
@@ -347,7 +359,6 @@ public class Panel extends JPanel {
         Setup.gameButtons(this, e -> actionPerformed(e.getActionCommand()));
         Setup.gameBoard(this);
     }
-
 
     /*
      * getter setter methods

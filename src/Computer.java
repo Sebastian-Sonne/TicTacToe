@@ -182,6 +182,32 @@ public class Computer {
         }
     }
 
+    public static void toString(String[][] gameState) {
+        for (String[] game : gameState) {
+            for (String let : game) {
+                if (let.equals("")) {
+                    System.out.print("  -  ");
+                } else {
+                    System.out.print(let + " | ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    public static void toString(JButton[][] gameState) {
+        for (JButton[] game : gameState) {
+            for (JButton let : game) {
+                if (let.getText().equals("")) {
+                    System.out.print("  -  ");
+                } else {
+                    System.out.print(let.getActionCommand() + " | ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
     /**
      * function to find the next best move for the maximizing player
      * 
@@ -243,9 +269,11 @@ public class Computer {
         int gameEvaluation = isTerminal(gameState, moveNum);
 
         if (gameEvaluation == -1 || gameEvaluation == 0 || gameEvaluation == 1) {
+            //System.out.println("log");
             return gameEvaluation;
         } else {
             int[] eveluation = miniMax(gameState);
+            //System.out.println("log 1");
             return eveluation[0];
         }
     }

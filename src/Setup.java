@@ -18,7 +18,7 @@ import javax.swing.JPanel;
  * Class to setup elements of JPanel for TicTacToe game
  * 
  * @author Sebastian Sonne
- * @version v2 23.03.2024
+ * @version v2 25.03.2024
  */
 public class Setup {
     private static final int UNIT = 100;
@@ -37,6 +37,10 @@ public class Setup {
     private static JLabel titleLabel;
     private static JLabel descriptionLabel;
     private static JLabel gameBoard;
+
+    /*
+     * setup functions
+     */
 
     /**
      * function to set up function buttons
@@ -117,7 +121,7 @@ public class Setup {
 
                 int x = COL_START + UNIT * i;
                 int y = ROW_START + UNIT * j;
-                buttons[i][j].setBounds(x + GAP, y + GAP, UNIT - GAP, UNIT - GAP);
+                buttons[i][j].setBounds(y + GAP, x + GAP, UNIT - GAP, UNIT - GAP);
 
                 buttons[i][j].addActionListener(buttonAction);
                 buttons[i][j].setActionCommand(i + ":" + j);
@@ -234,7 +238,7 @@ public class Setup {
     }
 
     /*
-     * get & set methods
+     * get methods
      */
 
     public static JButton getResetButton() {
